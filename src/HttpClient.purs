@@ -1,4 +1,4 @@
-module Http where
+module HttpClient (fetch, C(..), ErrorCode(..), Url(..)) where
 
 import Data.Function
 import Data.Either
@@ -10,7 +10,7 @@ foreign import data Net :: !
 type ErrorCode = String
 type Url = String
 
-type M eff = Eff (fs :: Net | eff)
+type M = Eff (fs :: Net)
 
 foreign import fetchImpl
   """
@@ -24,19 +24,22 @@ foreign import fetchImpl
        .catch(function (error) { onFailure(error); });
    };
   }
-  """ :: forall eff. Fn3 Url
-                         (String -> M eff Unit)
-                         (ErrorCode -> M eff Unit)
-                         (M eff Unit)
+  """ :: Fn3 Url
+                         (String -> M Unit)
+                         (ErrorCode -> M Unit)
+                         (M Unit)
 
-fetchCb :: forall eff. Url -> (Either ErrorCode String -> M eff Unit) -> M eff Unit
+fetchCb :: Url -> (Either ErrorCode String -> M Unit) -> M Unit
 fetchCb url k =
    runFn3 fetchImpl
           url
           (k <<< Right)
           (k <<< Left)
 
-type C eff = ContT Unit (M eff)
+type C = ContT Unit M
 
-fetch :: forall eff. Url -> C eff (Either ErrorCode String)
+type Http = C (Either ErrorCode String) 
+
+
+fetch :: forall eff. Url -> C (Either ErrorCode String)
 fetch path = ContT $ fetchCb path
