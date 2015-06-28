@@ -12,4 +12,4 @@ var loader = require ("MetadataLoader");
 
 // loader.fetchTVShowsDetails (function (x) { console.log(x); })
 
-loader.fetchTVShowEpisode ({ series:"Columbo", season:"1", episode:"1" })  (function (x) { console.log(x); })
+loader.fetchTVShowEpisode ({ series:"Columbo", season:"1", episode:"1", source:"http://url/file.mp4" })  (function (x) { console.log(x); })

@@ -18,15 +18,15 @@ type MovieSpec = { title:: String, year:: String, source:: String }
 
 type TVShowSpec = { title:: String, year:: String, source:: String }
 
-type TVShowEpisodeSpec = { series:: String, season:: String, episode:: String }
+type TVShowEpisodeSpec = { series:: String, season:: String, episode:: String, source:: String }
 
 type RootData = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
 type MovieDetails = { title::String, year:: String, source:: String }
 
-type TVShowDetails = { title::String, year:: String, source:: String }
+type TVShowDetails = { title::String, year:: String }
 
-type TVShowEpisodeDetails = { title::String, season::String, episode:: String }
+type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String }
 
 rootList ::  Http RootData
 rootList = (\(Right x) -> x) <$> fetch "http://192.168.0.24/MyMoviesCatalog.json"
@@ -56,7 +56,7 @@ fetchTVShow tvshow = (\(Right x) -> x) <$> fetch url
               "&plot=full&type=series&r=json"
 
 fetchTVShowEpisode :: TVShowEpisodeSpec -> Http TVShowEpisodeDetails
-fetchTVShowEpisode episode = (\(Right x) -> x) <$> fetch url
+fetchTVShowEpisode episode = (\(Right details) -> details { source = episode.source }) <$> fetch url
   where url = "http://www.omdbapi.com/?t=" ++ (replace " " "+" (episode.series)) ++
               "&Season=" ++ episode.season ++
               "&Episode=" ++ episode.episode ++ "&plot=full&type=series&r=json"
