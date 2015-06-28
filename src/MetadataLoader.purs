@@ -14,15 +14,15 @@ import Data.Traversable
 import Data.Foldable
 import HttpClient
 
-type MovieSpec = { title:: String, year:: String }
+type MovieSpec = { title:: String, year:: String, source:: String }
 
-type TVShowSpec = { title:: String, year:: String }
+type TVShowSpec = { title:: String, year:: String, source:: String }
 
 type RootData = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
-type MovieDetails = { title::String, year:: String }
+type MovieDetails = { title::String, year:: String, source:: String }
 
-type TVShowDetails = { title::String, year:: String }
+type TVShowDetails = { title::String, year:: String, source:: String }
 
 rootList ::  Http RootData
 rootList = (\(Right x) -> x) <$> fetch "http://192.168.0.24/MyMoviesCatalog.json"
@@ -40,7 +40,7 @@ fetchTVShowsDetails :: Http [TVShowDetails]
 fetchTVShowsDetails = join ((sequence <<< (<$>) fetchTVShow) <$> tvShowsSpecs)
 
 fetchMovie :: MovieSpec ->  Http MovieDetails
-fetchMovie movie = (\(Right x) -> x) <$> fetch url
+fetchMovie movie = (\(Right details) -> details { source = movie.source }) <$> fetch url
   where url = "http://www.omdbapi.com/?t=" ++ (replace " " "+" (movie.title)) ++ "&y=" ++ movie.year ++ "&plot=full&type=movie&r=json"
 
 fetchTVShow :: TVShowSpec ->  Http TVShowDetails
