@@ -1,4 +1,4 @@
-module HttpClient (fetch, C(..), ErrorCode(..), Url(..)) where
+module HttpClient (fetch, Http(..), ErrorCode(..), Url(..)) where
 
 import Data.Function
 import Data.Either
@@ -15,31 +15,33 @@ type M = Eff (fs :: Net)
 foreign import fetchImpl
   """
    function fetchImpl(url, onSuccess, onFailure) {
-    return function() {
      var fetch = require('node-fetch');
      console.log('requests ' + url);
      fetch(url)
        .then(function (response) { return response.json(); })
-       .then(function (x) { onSuccess(x); })
-       .catch(function (error) { onFailure(error); });
-   };
+       .then(function (json) { return JSON.stringify(json); })
+       .then(function (json) { return json.replace(/"([^"]+)":/g,function($0,$1){return ('"'+$1.toLowerCase()+'":');}); })
+       .then(function (json) { return JSON.parse(json); })
+       .then(function (x) {
+         onSuccess(x);
+        })
+       .catch(function (error) {
+         onFailure(error);
+        });
   }
-  """ :: Fn3 Url
-                         (String -> M Unit)
+  """ :: forall a. Fn3 Url
+                         (a -> M Unit)
                          (ErrorCode -> M Unit)
                          (M Unit)
 
-fetchCb :: Url -> (Either ErrorCode String -> M Unit) -> M Unit
+fetchCb :: forall a. Url -> (Either ErrorCode a -> M Unit) -> M Unit
 fetchCb url k =
    runFn3 fetchImpl
           url
           (k <<< Right)
           (k <<< Left)
 
-type C = ContT Unit M
+type Http a = ContT Unit M a
 
-type Http = C (Either ErrorCode String) 
-
-
-fetch :: forall eff. Url -> C (Either ErrorCode String)
+fetch :: forall a. Url -> Http (Either ErrorCode a)
 fetch path = ContT $ fetchCb path
