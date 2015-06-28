@@ -8,4 +8,6 @@ var loader = require ("MetadataLoader");
 
 // loader.fetchMovies (function (x) { console.log(x); }) ()
 
-loader.fetchMoviesDetails (function (x) { console.log(x); }) 
+// loader.fetchMoviesDetails (function (x) { console.log(x); })
+
+loader.fetchTVShowsDetails (function (x) { console.log(x); }) 

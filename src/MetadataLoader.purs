@@ -22,6 +22,8 @@ type RootData = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
 type MovieDetails = { title::String, year:: String }
 
+type TVShowDetails = { title::String, year:: String }
+
 rootList ::  Http RootData
 rootList = (\(Right x) -> x) <$> fetch "http://192.168.0.24/MyMoviesCatalog.json"
 
@@ -31,10 +33,16 @@ moviesSpecs =  (\x -> x.movies) <$> rootList
 fetchMoviesDetails :: Http [MovieDetails]
 fetchMoviesDetails =  join ((sequence <<< (<$>) fetchMovie) <$> moviesSpecs)
 
+tvShowsSpecs :: Http [TVShowSpec]
+tvShowsSpecs = (\x -> x.tvshows) <$> rootList
+
+fetchTVShowsDetails :: Http [TVShowDetails]
+fetchTVShowsDetails = join ((sequence <<< (<$>) fetchTVShow) <$> tvShowsSpecs)
+
 fetchMovie :: MovieSpec ->  Http MovieDetails
 fetchMovie movie = (\(Right x) -> x) <$> fetch url
   where url = "http://www.omdbapi.com/?t=" ++ (replace " " "+" (movie.title)) ++ "&y=" ++ movie.year ++ "&plot=full&type=movie&r=json"
 
-fetchTVShow :: TVShowSpec ->  Http MovieDetails
+fetchTVShow :: TVShowSpec ->  Http TVShowDetails
 fetchTVShow tvshow = (\(Right x) -> x) <$> fetch url
   where url = "http://www.omdbapi.com/?t=" ++ (replace " " "+" (tvshow.title)) ++ "&y=" ++ tvshow.year ++ "&plot=full&type=series&r=json"
