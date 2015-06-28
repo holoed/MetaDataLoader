@@ -14,4 +14,4 @@ var loader = require ("MetadataLoader");
 
 // loader.fetchTVShowEpisode ({ series:"Columbo", season:"1", episode:"1", source:"http://url/file.mp4" })  (function (x) { console.log(x); })
 
-loader.getState ("http://192.168.0.24/MyMoviesCatalog.json") (function (x) { console.log(x); })
+loader.getState ("http://192.168.0.24/MyMoviesCatalog.json") (function (x) { console.log(x.tvshows[1].seasons[0].episodes[2]); })

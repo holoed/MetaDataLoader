@@ -41,7 +41,7 @@ getState url = do myList <- getMyList url
                   return ({ movies: mvs, tvshows: tvs })
 
 getMyList ::  String -> Http MyList
-getMyList url = (\(Right x) -> x) <$> fetch url
+getMyList url = fetch url
 
 fetchMoviesDetails :: [MovieSpec] -> Http [MovieDetails]
 fetchMoviesDetails moviesSpecs = sequence (fetchMovie <$> moviesSpecs)
@@ -60,19 +60,22 @@ fetchTVShowEpisodesDetails :: [TVShowEpisodeSpec] -> Http [TVShowEpisodeDetails]
 fetchTVShowEpisodesDetails episodesSpecs = sequence (fetchTVShowEpisode <$> episodesSpecs)
 
 fetchMovie :: MovieSpec ->  Http MovieDetails
-fetchMovie movie = (\(Right details) -> details { source = movie.source }) <$> fetch url
-  where url = "http://www.omdbapi.com/?t=" ++ (replace " " "+" (movie.title)) ++
+fetchMovie movie = (\details -> details { source = movie.source }) <$> fetch url
+  where url = "http://www.omdbapi.com/?t=" ++ replaceSpaceWithPlus (movie.title) ++
               "&y=" ++ movie.year ++
               "&plot=full&type=movie&r=json"
 
 fetchTVShow :: TVShowSpec ->  Http TVShowDetails
-fetchTVShow tvshow = (\(Right details) -> details) <$> fetch url
-  where url = "http://www.omdbapi.com/?t=" ++ (replace " " "+" (tvshow.title)) ++
+fetchTVShow tvshow = fetch url
+  where url = "http://www.omdbapi.com/?t=" ++ replaceSpaceWithPlus (tvshow.title) ++
               "&y=" ++ tvshow.year ++
               "&plot=full&type=series&r=json"
 
 fetchTVShowEpisode :: TVShowEpisodeSpec -> Http TVShowEpisodeDetails
-fetchTVShowEpisode episode = (\(Right details) -> details { source = episode.source }) <$> fetch url
-  where url = "http://www.omdbapi.com/?t=" ++ (replace " " "+" (episode.series)) ++
+fetchTVShowEpisode episode = (\details -> details { source = episode.source }) <$> fetch url
+  where url = "http://www.omdbapi.com/?t=" ++ replaceSpaceWithPlus (episode.series) ++
               "&Season=" ++ episode.season ++
               "&Episode=" ++ episode.episode ++ "&plot=full&type=series&r=json"
+
+replaceSpaceWithPlus :: String -> String
+replaceSpaceWithPlus =  (joinWith "+") <<<(split " ") 

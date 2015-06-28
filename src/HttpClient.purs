@@ -43,5 +43,8 @@ fetchCb url k =
 
 type Http a = ContT Unit M a
 
-fetch :: forall a. Url -> Http (Either ErrorCode a)
-fetch path = ContT $ fetchCb path
+fetchSafe :: forall a. Url -> Http (Either ErrorCode a)
+fetchSafe path = ContT $ fetchCb path
+
+fetch :: forall a. Url -> Http a
+fetch path = (\(Right x) -> x) <$> fetchSafe path
