@@ -4,7 +4,7 @@ var loader = require ("MetadataLoader");
 
 // loader.fetchTVShow ({ title: "Columbo", year: "1971"}) (function (x) { console.log(x); }) ()
 
-// loader.rootList (function (x) { console.log(x); })
+// loader.getMyList ("http://192.168.0.24/MyMoviesCatalog.json") (function (x) { console.log(x); })
 
 // loader.fetchMovies (function (x) { console.log(x); }) ()
 
@@ -12,4 +12,6 @@ var loader = require ("MetadataLoader");
 
 // loader.fetchTVShowsDetails (function (x) { console.log(x); })
 
-loader.fetchTVShowEpisode ({ series:"Columbo", season:"1", episode:"1", source:"http://url/file.mp4" })  (function (x) { console.log(x); })
+// loader.fetchTVShowEpisode ({ series:"Columbo", season:"1", episode:"1", source:"http://url/file.mp4" })  (function (x) { console.log(x); })
+
+loader.getState ("http://192.168.0.24/MyMoviesCatalog.json") (function (x) { console.log(x); })

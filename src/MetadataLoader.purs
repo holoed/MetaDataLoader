@@ -16,32 +16,40 @@ import HttpClient
 
 type MovieSpec = { title:: String, year:: String, source:: String }
 
-type TVShowSpec = { title:: String, year:: String, source:: String }
+type TVShowSpec = { title:: String, year:: String, source:: String, seasons:: [TVShowSeasonSpec] }
 
-type TVShowEpisodeSpec = { series:: String, season:: String, episode:: String, source:: String }
+type TVShowSeasonSpec = { season:: String, episodes:: [TVShowEpisodeSpec] }
 
-type RootData = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
+type TVShowEpisodeSpec = { title:: String, series:: String, season:: String, episode:: String, source:: String }
+
+type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
 type MovieDetails = { title::String, year:: String, source:: String }
 
-type TVShowDetails = { title::String, year:: String }
+type TVShowDetails = { title::String, year:: String, seasons:: [TVShowSeasonSpec] }
 
 type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String }
 
-rootList ::  Http RootData
-rootList = (\(Right x) -> x) <$> fetch "http://192.168.0.24/MyMoviesCatalog.json"
+type State = { movies::[MovieDetails], tvshows::[TVShowDetails] }
 
-moviesSpecs :: Http [MovieSpec]
-moviesSpecs =  (\x -> x.movies) <$> rootList
+getState :: Url -> Http State
+getState url = do myList <- getMyList url
+                  mvs <- fetchMoviesDetails (myList.movies)
+                  tvs <- fetchTVShowsDetails (myList.tvshows)
+                  return ({ movies: mvs, tvshows: tvs })
 
-fetchMoviesDetails :: Http [MovieDetails]
-fetchMoviesDetails =  join ((sequence <<< (<$>) fetchMovie) <$> moviesSpecs)
 
-tvShowsSpecs :: Http [TVShowSpec]
-tvShowsSpecs = (\x -> x.tvshows) <$> rootList
+getMyList ::  String -> Http MyList
+getMyList url = (\(Right x) -> x) <$> fetch url
 
-fetchTVShowsDetails :: Http [TVShowDetails]
-fetchTVShowsDetails = join ((sequence <<< (<$>) fetchTVShow) <$> tvShowsSpecs)
+fetchMoviesDetails :: [MovieSpec] -> Http [MovieDetails]
+fetchMoviesDetails moviesSpecs = sequence (fetchMovie <$> moviesSpecs)
+
+fetchTVShowsDetails :: [TVShowSpec] -> Http [TVShowDetails]
+fetchTVShowsDetails tvShowsSpecs = sequence (fetchTVShow <$> tvShowsSpecs)
+
+fetchTVShowEpisodesDetails :: [TVShowEpisodeSpec] -> Http [TVShowEpisodeDetails]
+fetchTVShowEpisodesDetails episodesSpecs = sequence (fetchTVShowEpisode <$> episodesSpecs)
 
 fetchMovie :: MovieSpec ->  Http MovieDetails
 fetchMovie movie = (\(Right details) -> details { source = movie.source }) <$> fetch url
@@ -50,7 +58,7 @@ fetchMovie movie = (\(Right details) -> details { source = movie.source }) <$> f
               "&plot=full&type=movie&r=json"
 
 fetchTVShow :: TVShowSpec ->  Http TVShowDetails
-fetchTVShow tvshow = (\(Right x) -> x) <$> fetch url
+fetchTVShow tvshow = (\(Right details) -> details { seasons = tvshow.seasons }) <$> fetch url
   where url = "http://www.omdbapi.com/?t=" ++ (replace " " "+" (tvshow.title)) ++
               "&y=" ++ tvshow.year ++
               "&plot=full&type=series&r=json"
