@@ -26,7 +26,9 @@ type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
 type MovieDetails = { title::String, year:: String, source:: String }
 
-type TVShowDetails = { title::String, year:: String, seasons:: [TVShowSeasonSpec] }
+type TVShowDetails = { title::String, year:: String, seasons:: [TVShowSeasonDetails] }
+
+type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] }
 
 type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String }
 
@@ -38,7 +40,6 @@ getState url = do myList <- getMyList url
                   tvs <- fetchTVShowsDetails (myList.tvshows)
                   return ({ movies: mvs, tvshows: tvs })
 
-
 getMyList ::  String -> Http MyList
 getMyList url = (\(Right x) -> x) <$> fetch url
 
@@ -46,7 +47,14 @@ fetchMoviesDetails :: [MovieSpec] -> Http [MovieDetails]
 fetchMoviesDetails moviesSpecs = sequence (fetchMovie <$> moviesSpecs)
 
 fetchTVShowsDetails :: [TVShowSpec] -> Http [TVShowDetails]
-fetchTVShowsDetails tvShowsSpecs = sequence (fetchTVShow <$> tvShowsSpecs)
+fetchTVShowsDetails tvShowsSpecs = sequence (f <$> tvShowsSpecs)
+	where f x = do dt <- fetchTVShow x
+	               sdt <- fetchTVShowsSeasonsDetails x
+	               return (dt { seasons = sdt })
+
+fetchTVShowsSeasonsDetails :: TVShowSpec -> Http [TVShowSeasonDetails]
+fetchTVShowsSeasonsDetails tvshow = sequence (f <$> (tvshow.seasons))
+    where f x = (\eps -> { season : x.season, episodes : eps }) <$> fetchTVShowEpisodesDetails(x.episodes)
 
 fetchTVShowEpisodesDetails :: [TVShowEpisodeSpec] -> Http [TVShowEpisodeDetails]
 fetchTVShowEpisodesDetails episodesSpecs = sequence (fetchTVShowEpisode <$> episodesSpecs)
@@ -58,7 +66,7 @@ fetchMovie movie = (\(Right details) -> details { source = movie.source }) <$> f
               "&plot=full&type=movie&r=json"
 
 fetchTVShow :: TVShowSpec ->  Http TVShowDetails
-fetchTVShow tvshow = (\(Right details) -> details { seasons = tvshow.seasons }) <$> fetch url
+fetchTVShow tvshow = (\(Right details) -> details) <$> fetch url
   where url = "http://www.omdbapi.com/?t=" ++ (replace " " "+" (tvshow.title)) ++
               "&y=" ++ tvshow.year ++
               "&plot=full&type=series&r=json"
