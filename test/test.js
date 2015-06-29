@@ -152,7 +152,7 @@ describe ('MetadataLoader tests', function(){
       }, result[1]);
     })
 
-    it ('should fetch tv shows details', function(){
+    it ('should fetch tv shows seasons details', function(){
       var result = {};
       loader.fetchTVShowsSeasonsDetails({
           seasons: [{season: "Season 2", episodes: [{
