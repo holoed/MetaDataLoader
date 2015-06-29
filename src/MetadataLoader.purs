@@ -78,4 +78,4 @@ fetchTVShowEpisode episode = (\details -> details { source = episode.source }) <
               "&Episode=" ++ episode.episode ++ "&plot=full&type=series&r=json"
 
 replaceSpaceWithPlus :: String -> String
-replaceSpaceWithPlus =  (joinWith "+") <<<(split " ") 
+replaceSpaceWithPlus =  (joinWith "+") <<< (split " ") 
