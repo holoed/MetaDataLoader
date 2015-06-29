@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - "0.10"
+install:
+  - "npm install bower grunt-cli pulp purescript mocha  -g"
+  - "bower install -f"
+  - "npm install mock-require"
+script:
+  - 'export NODE_PATH="$NODE_PATH:./output"'
+  - "rm -rf output"
+  - "pulp build"
+  - "mocha"
