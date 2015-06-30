@@ -79,9 +79,9 @@ mock('../output/HttpClient', { fetch: function(url) {
   }
 });
 
-var loader = require ("MetadataLoader");
+var loader = require ("OMDBMetadataLoader");
 
-describe ('MetadataLoader tests', function(){
+describe ('OMDB MetadataLoader tests', function(){
 
     it ('should return my list', function(){
       var result = {};

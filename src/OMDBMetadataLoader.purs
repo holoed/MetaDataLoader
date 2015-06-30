@@ -1,4 +1,4 @@
-module MetadataLoader where
+module OMDBMetadataLoader where
 
 import Data.String
 import Data.Function
