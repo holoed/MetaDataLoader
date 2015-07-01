@@ -27,7 +27,7 @@ type TVShowEpisodeSpec = { seriesId:: Number, title:: String, series:: String, s
 
 type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
-type MovieDetails = { movieId:: Number, title::String, year:: String, source:: String, director:: String, plot:: String }
+type MovieDetails = { movieId:: Number, title::String, year:: String, source:: String, director:: String, plot:: String, poster::String }
 
 type MovieCredits = { movieId:: Number, director:: String }
 
@@ -37,9 +37,9 @@ type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] 
 
 type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String, released:: String }
 
-type TMDBMovieDetails = { results::[{ id::Number, title::String, release_date::String, overview:: String }] }
+type TMDBMovieDetails = { results::[{ id::Number, title::String, release_date::String, overview:: String, poster_path:: String }] }
 
-type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date::String }] }
+type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date::String, poster_path:: String }] }
 
 type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_number::String, air_date::String }
 
@@ -91,6 +91,7 @@ fetchMovie' movie = (\details -> {
 		movieId : details.id,
         title : details.title,
         plot: details.overview,
+        poster: "http://image.tmdb.org/t/p/w500/" ++ details.poster_path,
         year : details.release_date, 
 		source : movie.source,
 		director: "" }) <$> ((\x -> head (x.results)) <$> response)
