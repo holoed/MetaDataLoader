@@ -31,7 +31,7 @@ type MovieDetails = { movieId:: Number, title::String, year:: String, source:: S
 
 type MovieCredits = { movieId:: Number, director:: String }
 
-type TVShowDetails = { seriesId::Number, title::String, year:: String, seasons:: [TVShowSeasonDetails] }
+type TVShowDetails = { seriesId::Number, title::String, year:: String, plot::String, seasons:: [TVShowSeasonDetails] }
 
 type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] }
 
@@ -39,7 +39,7 @@ type TVShowEpisodeDetails = { title::String, season::String, episode:: String, s
 
 type TMDBMovieDetails = { results::[{ id::Number, title::String, release_date::String, overview:: String, poster_path:: String }] }
 
-type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date::String, poster_path:: String }] }
+type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date::String, overview::String, poster_path:: String }] }
 
 type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_number::String, air_date::String }
 
@@ -105,6 +105,7 @@ fetchTVShow tvshow = (\details -> {
 		seriesId: details.id,
         title : details.name,
         year : details.first_air_date, 
+        plot: details.overview,
 		seasons: [] }) <$> ((\x -> head (x.results)) <$> response)
   where url = "http://api.themoviedb.org/3/search/tv?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (tvshow.title)
