@@ -31,7 +31,7 @@ type MovieDetails = { movieId:: Number, title::String, year:: String, source:: S
 
 type MovieCredits = { movieId:: Number, director:: String }
 
-type TVShowDetails = { seriesId::Number, title::String, year:: String, plot::String, seasons:: [TVShowSeasonDetails] }
+type TVShowDetails = { seriesId::Number, title::String, year:: String, plot::String, poster:: String, seasons:: [TVShowSeasonDetails] }
 
 type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] }
 
@@ -106,6 +106,7 @@ fetchTVShow tvshow = (\details -> {
         title : details.name,
         year : details.first_air_date, 
         plot: details.overview,
+        poster: "http://image.tmdb.org/t/p/w500/" ++ details.poster_path,
 		seasons: [] }) <$> ((\x -> head (x.results)) <$> response)
   where url = "http://api.themoviedb.org/3/search/tv?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (tvshow.title)
