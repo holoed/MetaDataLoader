@@ -27,7 +27,7 @@ type TVShowEpisodeSpec = { seriesId:: Number, title:: String, series:: String, s
 
 type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
-type MovieDetails = { movieId:: Number, title::String, year:: String, source:: String, director:: String }
+type MovieDetails = { movieId:: Number, title::String, year:: String, source:: String, director:: String, plot:: String }
 
 type MovieCredits = { movieId:: Number, director:: String }
 
@@ -37,7 +37,7 @@ type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] 
 
 type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String, released:: String }
 
-type TMDBMovieDetails = { results::[{ id::Number, title::String, release_date::String }] }
+type TMDBMovieDetails = { results::[{ id::Number, title::String, release_date::String, overview:: String }] }
 
 type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date::String }] }
 
@@ -90,6 +90,7 @@ fetchMovie' :: MovieSpec ->  Http MovieDetails
 fetchMovie' movie = (\details -> { 
 		movieId : details.id,
         title : details.title,
+        plot: details.overview,
         year : details.release_date, 
 		source : movie.source,
 		director: "" }) <$> ((\x -> head (x.results)) <$> response)

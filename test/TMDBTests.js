@@ -189,7 +189,8 @@ describe ('TMDB MetadataLoader tests', function(){
         title: "Back to the future (The Movie)",
         year: "1985",
         source: "http://localhost/BackToTheFuture.mp4",
-        director: "Robert Zemeckis"
+        director: "Robert Zemeckis",
+        plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
       }, result);
     })
 
@@ -247,14 +248,16 @@ describe ('TMDB MetadataLoader tests', function(){
         title: "Back to the future (The Movie)",
         year: "1985",
         source: "http://localhost/BackToTheFuture.mp4",
-        director: "Robert Zemeckis"
+        director: "Robert Zemeckis",
+        plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
       }, result[0]);
       assert.deepEqual({
         movieId: 653,
         title: "The Bourne Supremacy (The Movie)",
         year: "2004",
         source: "http://localhost/TheBourneSupremacy.mp4",
-        director: "Paul Greengrass"
+        director: "Paul Greengrass",
+        plot: "The story of Jason Bourne again"
       }, result[1]);
     })
 
@@ -352,13 +355,15 @@ describe ('TMDB MetadataLoader tests', function(){
             title:"Back to the future (The Movie)",
             year:"1985",
             source:"http://localhost/BackToTheFuture.mp4",
-            director:"Robert Zemeckis"
+            director:"Robert Zemeckis",
+            plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
           },
           { movieId:653, 
             title:"The Bourne Supremacy (The Movie)",
             year:"2004",
             source:"http://localhost/TheBourneSupremacy.mp4",
-            director: "Paul Greengrass"
+            director: "Paul Greengrass",
+            plot: "The story of Jason Bourne again"
           }],
         tvshows:[
         { seriesId: 873,
