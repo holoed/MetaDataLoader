@@ -15,6 +15,7 @@ import Data.Foldable
 import HttpClient
 import Config
 import Data.Array.Unsafe 
+import Data.Array (filter)
 
 type MovieSpec = { title:: String, year:: String, source:: String }
 
@@ -26,7 +27,9 @@ type TVShowEpisodeSpec = { seriesId:: Number, title:: String, series:: String, s
 
 type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
-type MovieDetails = { title::String, year:: String, source:: String }
+type MovieDetails = { movieId:: Number, title::String, year:: String, source:: String, director:: String }
+
+type MovieCredits = { movieId:: Number, director:: String }
 
 type TVShowDetails = { seriesId::Number, title::String, year:: String, seasons:: [TVShowSeasonDetails] }
 
@@ -34,11 +37,13 @@ type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] 
 
 type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String, released:: String }
 
-type TMDBMovieDetails = { results::[{ title::String, release_date::String }] }
+type TMDBMovieDetails = { results::[{ id::Number, title::String, release_date::String }] }
 
 type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date::String }] }
 
 type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_number::String, air_date::String }
+
+type TMDBMovieCredits = { id::Number, cast::[{name::String}], crew::[{name::String, job::String}] }
 
 type State = { movies::[MovieDetails], tvshows::[TVShowDetails] }
 
@@ -68,11 +73,26 @@ fetchTVShowsSeasonsDetails tvshow = sequence (f <$> (tvshow.seasons))
 fetchTVShowEpisodesDetails :: [TVShowEpisodeSpec] -> Http [TVShowEpisodeDetails]
 fetchTVShowEpisodesDetails episodesSpecs = sequence (fetchTVShowEpisode <$> episodesSpecs)
 
-fetchMovie :: MovieSpec ->  Http MovieDetails
-fetchMovie movie = (\details -> { 
+fetchMovieCredits :: Number -> Http MovieCredits
+fetchMovieCredits movieId = (\details -> { 
+		movieId : details.id,
+        director: head ((\x -> x.name) <$> (filter (\x-> x.job == "Director") details.crew))
+       }) <$> response
+  where url = "http://api.themoviedb.org/3/movie/" ++ (show movieId) ++ "/credits?api_key=" ++ apiKey
+        response = (fetch url) :: Http TMDBMovieCredits
+
+fetchMovie :: MovieSpec -> Http MovieDetails
+fetchMovie movie = do dt <- fetchMovie' movie
+                      cr <- fetchMovieCredits (dt.movieId)
+                      return dt { director = cr.director }
+
+fetchMovie' :: MovieSpec ->  Http MovieDetails
+fetchMovie' movie = (\details -> { 
+		movieId : details.id,
         title : details.title,
         year : details.release_date, 
-		source : movie.source }) <$> ((\x -> head (x.results)) <$> response)
+		source : movie.source,
+		director: "" }) <$> ((\x -> head (x.results)) <$> response)
   where url = "http://api.themoviedb.org/3/search/movie?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (movie.title)
         year = "&year=" ++ movie.year

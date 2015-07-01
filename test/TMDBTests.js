@@ -37,7 +37,6 @@ var testMyList = {
 };
 
 mock('../output/HttpClient', { fetch: function(url) {
-
         return function(cb) {
           if (url == testUrl)
             return cb(testMyList);
@@ -68,7 +67,7 @@ mock('../output/HttpClient', { fetch: function(url) {
               { adult:false,
                 backdrop_path:"/x4N74cycZvKu5k3KDERJay4ajR3.jpg",
                 genre_ids:[12,35,878,10751],
-                id:105,
+                id:653,
                 original_language:"en",
                 original_title:"The Bourne Supremacy",
                 overview:"The story of Jason Bourne again",
@@ -148,6 +147,20 @@ mock('../output/HttpClient', { fetch: function(url) {
               still_path:"/ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
               vote_average:0.0,
               vote_count:0});
+
+          if (url == "http://api.themoviedb.org/3/movie/105/credits?api_key=1111111111111111")
+            return cb({
+              id: 105,
+              cast: [{name:"Michael J. Fox"}],
+              crew: [{name:"Robert Zemeckis", job:"Director"}]
+            })
+
+          if (url == "http://api.themoviedb.org/3/movie/653/credits?api_key=1111111111111111")
+            return cb({
+              id: 653,
+              cast: [{name:"Matt Damon"}],
+              crew: [{name:"Paul Greengrass", job:"Director"}]
+            })
       }
   }
 });
@@ -172,9 +185,22 @@ describe ('TMDB MetadataLoader tests', function(){
         result = x;
       });
       assert.deepEqual({
+        movieId: 105,
         title: "Back to the future (The Movie)",
         year: "1985",
-        source: "http://localhost/BackToTheFuture.mp4"
+        source: "http://localhost/BackToTheFuture.mp4",
+        director: "Robert Zemeckis"
+      }, result);
+    })
+
+     it ('should fetch movie crew', function() {
+      var result = {};
+      loader.fetchMovieCredits(105)(function (x){
+        result = x;
+      });
+      assert.deepEqual({
+        movieId: 105,
+        director: "Robert Zemeckis"
       }, result);
     })
 
@@ -217,14 +243,18 @@ describe ('TMDB MetadataLoader tests', function(){
       ])(function (x) { result = x; })
       assert.equal(2, result.length);
       assert.deepEqual({
+        movieId: 105,
         title: "Back to the future (The Movie)",
         year: "1985",
-        source: "http://localhost/BackToTheFuture.mp4"
+        source: "http://localhost/BackToTheFuture.mp4",
+        director: "Robert Zemeckis"
       }, result[0]);
       assert.deepEqual({
+        movieId: 653,
         title: "The Bourne Supremacy (The Movie)",
         year: "2004",
-        source: "http://localhost/TheBourneSupremacy.mp4"
+        source: "http://localhost/TheBourneSupremacy.mp4",
+        director: "Paul Greengrass"
       }, result[1]);
     })
 
@@ -318,8 +348,18 @@ describe ('TMDB MetadataLoader tests', function(){
 
       assert.deepEqual({
         movies: [
-          { title:"Back to the future (The Movie)",year:"1985",source:"http://localhost/BackToTheFuture.mp4"},
-          { title:"The Bourne Supremacy (The Movie)",year:"2004",source:"http://localhost/TheBourneSupremacy.mp4"}],
+          { movieId:105, 
+            title:"Back to the future (The Movie)",
+            year:"1985",
+            source:"http://localhost/BackToTheFuture.mp4",
+            director:"Robert Zemeckis"
+          },
+          { movieId:653, 
+            title:"The Bourne Supremacy (The Movie)",
+            year:"2004",
+            source:"http://localhost/TheBourneSupremacy.mp4",
+            director: "Paul Greengrass"
+          }],
         tvshows:[
         { seriesId: 873,
           title: 'Columbo (The Series)',
