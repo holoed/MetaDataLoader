@@ -35,13 +35,13 @@ type TVShowDetails = { seriesId::Number, title::String, year:: String, plot::Str
 
 type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] }
 
-type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String, released:: String }
+type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String, released:: String, plot:: String }
 
 type TMDBMovieDetails = { results::[{ id::Number, title::String, release_date::String, overview:: String, poster_path:: String }] }
 
 type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date::String, overview::String, poster_path:: String }] }
 
-type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_number::String, air_date::String }
+type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_number::String, air_date::String, overview::String }
 
 type TMDBMovieCredits = { id::Number, cast::[{name::String}], crew::[{name::String, job::String}] }
 
@@ -118,6 +118,7 @@ fetchTVShowEpisode episode = (\details -> {
         title : details.name,
         season: show details.season_number,
         episode: show details.episode_number,
+        plot: details.overview,
         released: details.air_date,
 		source : episode.source }) <$> response
   where url = "http://api.themoviedb.org/3/tv/" ++ (show episode.seriesId) ++ 

@@ -235,6 +235,7 @@ describe ('TMDB MetadataLoader tests', function(){
         released: "05 Nov 1972",
         season: "2",
         episode: "3",
+        plot: "One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
         source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
       }, result);
     })
@@ -281,6 +282,7 @@ describe ('TMDB MetadataLoader tests', function(){
         assert.deepEqual([
           { season: "Season 2", episodes: [{
               title: "The most crucial game",
+              plot: "One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
               season: "2",
               episode: "3",
               released: "05 Nov 1972",
@@ -326,6 +328,7 @@ describe ('TMDB MetadataLoader tests', function(){
             { season:"Season 2",
               episodes:[
                 { title:"The most crucial game",
+                 plot: "One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
                  released:"05 Nov 1972",
                  season:"2",
                  episode:"3",
@@ -345,6 +348,7 @@ describe ('TMDB MetadataLoader tests', function(){
             { season:"Season 7",
               episodes:[
                 { title:"Interface",
+                  plot: "",
                   released:"02 Oct 1993",
                   season:"7",
                   episode:"3",
@@ -387,6 +391,7 @@ describe ('TMDB MetadataLoader tests', function(){
           seasons: [ { season: 'Season 2',
                        episodes: [{
                          title: "The most crucial game",
+                         plot: "One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
                          released: "05 Nov 1972",
                          season: "2",
                          episode: "3",
@@ -401,6 +406,7 @@ describe ('TMDB MetadataLoader tests', function(){
           seasons: [ { season: 'Season 7',
                        episodes: [{
                          title: "Interface",
+                         plot:"",
                          released: "02 Oct 1993",
                          season: "7",
                          episode: "3",
