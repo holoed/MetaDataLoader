@@ -5,8 +5,5 @@ install:
   - "npm install bower grunt-cli pulp purescript mocha  -g"
   - "bower install -f"
   - "npm install mock-require"
-script:
-  - 'export NODE_PATH="$NODE_PATH:./output"'
-  - "rm -rf output"
-  - "pulp build"
-  - "mocha test/OMDBTests.js test/TMDBTests.js"
+script: 
+  - "bash ./buildAndRunTests.sh"
