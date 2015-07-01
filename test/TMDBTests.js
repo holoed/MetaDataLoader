@@ -37,6 +37,7 @@ var testMyList = {
 };
 
 mock('../output/HttpClient', { fetch: function(url) {
+
         return function(cb) {
           if (url == testUrl)
             return cb(testMyList);
@@ -55,6 +56,26 @@ mock('../output/HttpClient', { fetch: function(url) {
                 poster_path:"/pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
                 popularity:5.055294,
                 title:"Back to the future (The Movie)",
+                video:false,
+                vote_average:7.6,
+                vote_count:2337
+              }], total_pages:1, total_results:2});
+
+          if (url == "http://api.themoviedb.org/3/search/movie?api_key=1111111111111111&query=The+Bourne+Supremacy&year=2004") 
+            return cb({
+              page:1,
+              results:[
+              { adult:false,
+                backdrop_path:"/x4N74cycZvKu5k3KDERJay4ajR3.jpg",
+                genre_ids:[12,35,878,10751],
+                id:105,
+                original_language:"en",
+                original_title:"The Bourne Supremacy",
+                overview:"The story of Jason Bourne again",
+                release_date:"2004",
+                poster_path:"/pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
+                popularity:5.055294,
+                title:"The Bourne Supremacy (The Movie)",
                 video:false,
                 vote_average:7.6,
                 vote_count:2337
@@ -90,6 +111,40 @@ mock('../output/HttpClient', { fetch: function(url) {
               id:48577,
               production_code:null,
               season_number:2,
+              still_path:"/ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
+              vote_average:0.0,
+              vote_count:0});
+
+          if (url == "http://api.themoviedb.org/3/search/tv?api_key=1111111111111111&query=Star+Trek+The+Next+Generation&year=1987")
+            return cb({
+              page:1,
+              results:[
+              { backdrop_path:"/39lDB3EStZjXJm7gZkhTkCjP2IE.jpg",
+               first_air_date:"1987",
+               genre_ids:[80],
+               id:234,
+               original_language:"en",
+               original_name:"Star Trek The Next Generation",
+               overview:"",
+               origin_country:["US"],
+               poster_path:"/1tUvH4fn8ZDXUHGgYlgxCueOCXi.jpg",
+               popularity:2.239149,
+               name:"Star Trek The Next Generation (ST:TNG)",
+               vote_average:8.5,
+               vote_count:13
+             }],total_pages:1,total_results:3});
+
+          if (url == "http://api.themoviedb.org/3/tv/234/season/7/episode/3?api_key=1111111111111111")
+            return cb({
+              air_date:"02 Oct 1993",
+              crew:[],
+              episode_number:3,
+              guest_stars:[],
+              name:"Interface",
+              overview:"",
+              id:48577,
+              production_code:null,
+              season_number:7,
               still_path:"/ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
               vote_average:0.0,
               vote_count:0});
@@ -129,6 +184,7 @@ describe ('TMDB MetadataLoader tests', function(){
         result = x;
       });
       assert.deepEqual({
+        seriesId: 873,
         title: "Columbo (The Series)",
         year: "1971",
         seasons: []
@@ -150,6 +206,145 @@ describe ('TMDB MetadataLoader tests', function(){
         season: "2",
         episode: "3",
         source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
+      }, result);
+    })
+
+    it ('should fetch movies details', function (){
+      var result = {};
+      loader.fetchMoviesDetails([
+        { title: "Back to the future", year: "1985", source: "http://localhost/BackToTheFuture.mp4" },
+        { title: "The Bourne Supremacy", year: "2004", source: "http://localhost/TheBourneSupremacy.mp4" },
+      ])(function (x) { result = x; })
+      assert.equal(2, result.length);
+      assert.deepEqual({
+        title: "Back to the future (The Movie)",
+        year: "1985",
+        source: "http://localhost/BackToTheFuture.mp4"
+      }, result[0]);
+      assert.deepEqual({
+        title: "The Bourne Supremacy (The Movie)",
+        year: "2004",
+        source: "http://localhost/TheBourneSupremacy.mp4"
+      }, result[1]);
+    })
+
+    it ('should fetch tv shows seasons details', function(){
+      var result = {};
+      loader.fetchTVShowsSeasonsDetails({
+          seriesId: 873,
+          seasons: [{ season: "Season 2", episodes: [{
+              series: "Columbo",
+              season: "2",
+              episode: "3",
+              source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
+            }]
+          }]
+        })(function (x) { result = x; })
+        assert.deepEqual([
+          { season: "Season 2", episodes: [{
+              title: "The most crucial game",
+              season: "2",
+              episode: "3",
+              released: "05 Nov 1972",
+              source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
+            }]
+          }
+        ], result);
+    })
+
+    it ('should fetch tv shows details', function(){
+      var result = {};
+      loader.fetchTVShowsDetails([
+        { title: "Columbo", year: "1971", seasons: [{
+          season: "Season 2",
+          episodes: [{
+              series: "Columbo",
+              season: "2",
+              episode: "3",
+              source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
+            }]
+        }]},
+        { title: "Star Trek The Next Generation", year: "1987", seasons: [{
+          season: "Season 7",
+          episodes: [{
+              series: "Star Trek The Next Generation",
+              season: "7",
+              episode: "3",
+              source: "http://localhost/STTNG/Interface.mp4"
+            }]
+        }]}
+      ])(function(x) { result = x; })
+      assert.equal(2, result.length);
+      assert.deepEqual([
+        {
+          seriesId: 873,
+          title:"Columbo (The Series)",
+          year:"1971",
+          seasons:[
+            { season:"Season 2",
+              episodes:[
+                { title:"The most crucial game",
+                 released:"05 Nov 1972",
+                 season:"2",
+                 episode:"3",
+                 source:"http://localhost/Columbo/TheMostCrucialGame.mp4"
+                }
+              ]
+            }
+          ]
+        },
+        { 
+          seriesId: 234,
+          title:"Star Trek The Next Generation (ST:TNG)",
+          year:"1987",
+          seasons:[
+            { season:"Season 7",
+              episodes:[
+                { title:"Interface",
+                  released:"02 Oct 1993",
+                  season:"7",
+                  episode:"3",
+                  source:"http://localhost/STTNG/Interface.mp4"
+                }
+              ]
+            }
+          ]
+        }], result);
+    })
+
+   it ('should get state', function(){
+      var result = {};
+      loader.getState(testUrl)(function(x){ result = x; })
+
+      assert.deepEqual({
+        movies: [
+          { title:"Back to the future (The Movie)",year:"1985",source:"http://localhost/BackToTheFuture.mp4"},
+          { title:"The Bourne Supremacy (The Movie)",year:"2004",source:"http://localhost/TheBourneSupremacy.mp4"}],
+        tvshows:[
+        { seriesId: 873,
+          title: 'Columbo (The Series)',
+          year: '1971',
+          seasons: [ { season: 'Season 2',
+                       episodes: [{
+                         title: "The most crucial game",
+                         released: "05 Nov 1972",
+                         season: "2",
+                         episode: "3",
+                         source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
+                       }] }]
+        },
+        { seriesId: 234,
+          title: 'Star Trek The Next Generation (ST:TNG)',
+          year: '1987',
+          seasons: [ { season: 'Season 7',
+                       episodes: [{
+                         title: "Interface",
+                         released: "02 Oct 1993",
+                         season: "7",
+                         episode: "3",
+                         source:"http://localhost/STTNG/Interface.mp4"
+                       }] }]
+        }]
       }, result);
     })
 })

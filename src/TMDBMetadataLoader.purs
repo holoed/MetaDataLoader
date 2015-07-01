@@ -18,17 +18,17 @@ import Data.Array.Unsafe
 
 type MovieSpec = { title:: String, year:: String, source:: String }
 
-type TVShowSpec = { title:: String, year:: String, source:: String, seasons:: [TVShowSeasonSpec] }
+type TVShowSpec = { seriesId:: Number, title:: String, year:: String, source:: String, seasons:: [TVShowSeasonSpec] }
 
 type TVShowSeasonSpec = { season:: String, episodes:: [TVShowEpisodeSpec] }
 
-type TVShowEpisodeSpec = { seriesId:: String, title:: String, series:: String, season:: String, episode:: String, source:: String }
+type TVShowEpisodeSpec = { seriesId:: Number, title:: String, series:: String, season:: String, episode:: String, source:: String }
 
 type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
 type MovieDetails = { title::String, year:: String, source:: String }
 
-type TVShowDetails = { title::String, year:: String, seasons:: [TVShowSeasonDetails] }
+type TVShowDetails = { seriesId::Number, title::String, year:: String, seasons:: [TVShowSeasonDetails] }
 
 type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] }
 
@@ -36,12 +36,37 @@ type TVShowEpisodeDetails = { title::String, season::String, episode:: String, s
 
 type TMDBMovieDetails = { results::[{ title::String, release_date::String }] }
 
-type TMDBTVShowDetails = { results::[{ name::String, first_air_date::String }] }
+type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date::String }] }
 
 type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_number::String, air_date::String }
 
+type State = { movies::[MovieDetails], tvshows::[TVShowDetails] }
+
+getState :: Url -> Http State
+getState url = do myList <- getMyList url
+                  mvs <- fetchMoviesDetails (myList.movies)
+                  tvs <- fetchTVShowsDetails (myList.tvshows)
+                  return ({ movies: mvs, tvshows: tvs })
+
 getMyList ::  String -> Http MyList
 getMyList url = fetch url
+
+fetchMoviesDetails :: [MovieSpec] -> Http [MovieDetails]
+fetchMoviesDetails moviesSpecs = sequence (fetchMovie <$> moviesSpecs)
+
+fetchTVShowsDetails :: [TVShowSpec] -> Http [TVShowDetails]
+fetchTVShowsDetails tvShowsSpecs = sequence (f <$> tvShowsSpecs)
+	where f x = do dt <- fetchTVShow x
+	               sdt <- fetchTVShowsSeasonsDetails (x { seriesId = dt.seriesId })
+ 	               return (dt { seasons = sdt })
+
+fetchTVShowsSeasonsDetails :: TVShowSpec -> Http [TVShowSeasonDetails]
+fetchTVShowsSeasonsDetails tvshow = sequence (f <$> (tvshow.seasons))
+    where f x = (\eps -> { season : x.season, episodes : eps }) <$> 
+                fetchTVShowEpisodesDetails ((\v -> v { seriesId = tvshow.seriesId }) <$> x.episodes)
+
+fetchTVShowEpisodesDetails :: [TVShowEpisodeSpec] -> Http [TVShowEpisodeDetails]
+fetchTVShowEpisodesDetails episodesSpecs = sequence (fetchTVShowEpisode <$> episodesSpecs)
 
 fetchMovie :: MovieSpec ->  Http MovieDetails
 fetchMovie movie = (\details -> { 
@@ -55,6 +80,7 @@ fetchMovie movie = (\details -> {
 
 fetchTVShow :: TVShowSpec ->  Http TVShowDetails
 fetchTVShow tvshow = (\details -> { 
+		seriesId: details.id,
         title : details.name,
         year : details.first_air_date, 
 		seasons: [] }) <$> ((\x -> head (x.results)) <$> response)
@@ -70,7 +96,7 @@ fetchTVShowEpisode episode = (\details -> {
         episode: show details.episode_number,
         released: details.air_date,
 		source : episode.source }) <$> response
-  where url = "http://api.themoviedb.org/3/tv/" ++ episode.seriesId ++ 
+  where url = "http://api.themoviedb.org/3/tv/" ++ (show episode.seriesId) ++ 
                 "/season/" ++ episode.season ++
                 "/episode/" ++ episode.episode ++ 
                 "?api_key=" ++ apiKey
