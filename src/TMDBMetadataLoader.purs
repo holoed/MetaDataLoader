@@ -30,9 +30,9 @@ type TVShowEpisodeSpec = { seriesId:: Number, title:: String, series:: String, s
 
 type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
-type MovieDetails = { movieId:: Number, genresIds:: [Number], genres:: [String], title::String, year:: String, source:: String, director:: String, plot:: String, poster::String }
+type MovieDetails = { movieId:: Number, genresIds:: [Number], genres:: [String], title::String, year:: String, source:: String, director:: String, writer::String, plot:: String, poster::String }
 
-type MovieCredits = { movieId:: Number, director:: String }
+type MovieCredits = { movieId:: Number, director:: String, writer:: String }
 
 type TVShowDetails = { seriesId::Number, title::String, year:: String, plot::String, poster:: String, seasons:: [TVShowSeasonDetails] }
 
@@ -86,8 +86,9 @@ fetchTVShowEpisodesDetails episodesSpecs = sequence (fetchTVShowEpisode <$> epis
 
 fetchMovieCredits :: Number -> Http MovieCredits
 fetchMovieCredits movieId = (\details -> { 
-		movieId : details.id,
-        director: head ((\x -> x.name) <$> (filter (\x-> x.job == "Director") details.crew))
+		    movieId : details.id,
+        director: joinWith "," ((\x -> x.name) <$> (filter (\x-> x.job == "Director") details.crew)),
+        writer: joinWith "," ((\x -> x.name) <$> (filter (\x-> x.job == "Writer") details.crew))
        }) <$> response
   where url = "http://api.themoviedb.org/3/movie/" ++ (show movieId) ++ "/credits?api_key=" ++ apiKey
         response = (fetch url) :: Http TMDBMovieCredits
@@ -95,7 +96,8 @@ fetchMovieCredits movieId = (\details -> {
 fetchMovie :: MovieSpec -> Http MovieDetails
 fetchMovie movie = do dt <- fetchMovie' movie
                       cr <- fetchMovieCredits (dt.movieId)
-                      return dt { director = cr.director }
+                      return dt { director = cr.director, 
+                                  writer = cr.writer }
 
 fetchMovie' :: MovieSpec ->  Http MovieDetails
 fetchMovie' movie = (\details -> { 
@@ -107,7 +109,8 @@ fetchMovie' movie = (\details -> {
         genresIds: details.genre_ids,
         genres:[],
 		    source : movie.source,
-		    director: "" }) <$> ((\x -> head (x.results)) <$> response)
+		    director: "",
+        writer:"" }) <$> ((\x -> head (x.results)) <$> response)
   where url = "http://api.themoviedb.org/3/search/movie?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (movie.title)
         year = "&year=" ++ movie.year
