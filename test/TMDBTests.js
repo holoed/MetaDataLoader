@@ -148,18 +148,22 @@ mock('../output/HttpClient', { fetch: function(url) {
               vote_average:0.0,
               vote_count:0});
 
-          if (url == "http://api.themoviedb.org/3/movie/105/credits?api_key=1111111111111111")
+          if (url == "http://api.themoviedb.org/3/movie/105?api_key=1111111111111111&append_to_response=credits,releases")
             return cb({
               id: 105,
-              cast: [{name:"Michael J. Fox"}],
-              crew: [{name:"Robert Zemeckis", job:"Director"}, {name:"Robert Zemeckis", job:"Writer"}]
+              credits: {
+                cast: [{name:"Michael J. Fox"}],
+                crew: [{name:"Robert Zemeckis", job:"Director"}, {name:"Robert Zemeckis", job:"Writer"}]
+              }
             });
 
-          if (url == "http://api.themoviedb.org/3/movie/653/credits?api_key=1111111111111111")
+          if (url == "http://api.themoviedb.org/3/movie/653?api_key=1111111111111111&append_to_response=credits,releases")
             return cb({
               id: 653,
-              cast: [{name:"Matt Damon"}],
-              crew: [{name:"Paul Greengrass", job:"Director"}]
+              credits: {
+                cast: [{name:"Matt Damon"}],
+                crew: [{name:"Paul Greengrass", job:"Director"}]
+              }
             });
 
           if (url == "http://api.themoviedb.org/3/genre/movie/list?api_key=1111111111111111")
@@ -213,11 +217,12 @@ describe ('TMDB MetadataLoader tests', function(){
         movieId: 105,
         title: "Back to the future (The Movie)",
         year: "1985",
-        genres: [],
+        genre: "",
         genresIds: [12, 35],
         source: "http://localhost/BackToTheFuture.mp4",
         director: "Robert Zemeckis",
         writer: "Robert Zemeckis",
+        actors: "Michael J. Fox",
         poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
         plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
       }, result);
@@ -225,13 +230,14 @@ describe ('TMDB MetadataLoader tests', function(){
 
      it ('should fetch movie crew', function() {
       var result = {};
-      loader.fetchMovieCredits(105)(function (x){
+      loader.fetchMovieExtraInfo(105)(function (x){
         result = x;
       });
       assert.deepEqual({
         movieId: 105,
         director: "Robert Zemeckis",
-        writer: "Robert Zemeckis"
+        writer: "Robert Zemeckis",
+        actors: "Michael J. Fox"
       }, result);
     })
 
@@ -262,6 +268,7 @@ describe ('TMDB MetadataLoader tests', function(){
       assert.deepEqual({
         title: "The most crucial game",
         released: "05 Nov 1972",
+        poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
         season: "2",
         episode: "3",
         plot: "One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
@@ -279,24 +286,26 @@ describe ('TMDB MetadataLoader tests', function(){
       assert.deepEqual({
         movieId: 105,
         title: "Back to the future (The Movie)",
-        genres: [],
+        genre: "",
         genresIds: [12, 35],
         year: "1985",
         source: "http://localhost/BackToTheFuture.mp4",
         director: "Robert Zemeckis",
         writer: "Robert Zemeckis",
+        actors: "Michael J. Fox",
         poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
         plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
       }, result[0]);
       assert.deepEqual({
         movieId: 653,
         title: "The Bourne Supremacy (The Movie)",
-        genres: [],
+        genre: "",
         genresIds: [12, 35],
         year: "2004",
         source: "http://localhost/TheBourneSupremacy.mp4",
         director: "Paul Greengrass",
         writer:"",
+        actors: "Matt Damon",
         poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
         plot: "The story of Jason Bourne again"
       }, result[1]);
@@ -321,6 +330,7 @@ describe ('TMDB MetadataLoader tests', function(){
               season: "2",
               episode: "3",
               released: "05 Nov 1972",
+              poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
               source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
             }]
           }
@@ -365,6 +375,7 @@ describe ('TMDB MetadataLoader tests', function(){
                 { title:"The most crucial game",
                  plot: "One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
                  released:"05 Nov 1972",
+                 poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
                  season:"2",
                  episode:"3",
                  source:"http://localhost/Columbo/TheMostCrucialGame.mp4"
@@ -385,6 +396,7 @@ describe ('TMDB MetadataLoader tests', function(){
                 { title:"Interface",
                   plot: "",
                   released:"02 Oct 1993",
+                  poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
                   season:"7",
                   episode:"3",
                   source:"http://localhost/STTNG/Interface.mp4"
@@ -433,22 +445,24 @@ describe ('TMDB MetadataLoader tests', function(){
           { movieId:105, 
             title:"Back to the future (The Movie)",
             year:"1985",
-            genres: ["Adventure", "Comedy"],
+            genre: "Adventure, Comedy",
             genresIds: [12, 35],
             source:"http://localhost/BackToTheFuture.mp4",
             director:"Robert Zemeckis",
             writer:"Robert Zemeckis",
+            actors: "Michael J. Fox",
             poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
             plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
           },
           { movieId:653, 
             title:"The Bourne Supremacy (The Movie)",
             year:"2004",
-            genres: ["Adventure", "Comedy"],
+            genre: "Adventure, Comedy",
             genresIds: [12, 35],
             source:"http://localhost/TheBourneSupremacy.mp4",
             director: "Paul Greengrass",
             writer:"",
+            actors:"Matt Damon",
             poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
             plot: "The story of Jason Bourne again"
           }],
@@ -463,6 +477,7 @@ describe ('TMDB MetadataLoader tests', function(){
                          title: "The most crucial game",
                          plot: "One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
                          released: "05 Nov 1972",
+                         poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
                          season: "2",
                          episode: "3",
                          source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
@@ -478,6 +493,7 @@ describe ('TMDB MetadataLoader tests', function(){
                          title: "Interface",
                          plot:"",
                          released: "02 Oct 1993",
+                         poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
                          season: "7",
                          episode: "3",
                          source:"http://localhost/STTNG/Interface.mp4"

@@ -30,23 +30,23 @@ type TVShowEpisodeSpec = { seriesId:: Number, title:: String, series:: String, s
 
 type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
-type MovieDetails = { movieId:: Number, genresIds:: [Number], genres:: [String], title::String, year:: String, source:: String, director:: String, writer::String, plot:: String, poster::String }
+type MovieDetails = { movieId:: Number, genresIds:: [Number], genre:: String, title::String, year:: String, source:: String, director:: String, actors::String, writer::String, plot:: String, poster::String }
 
-type MovieCredits = { movieId:: Number, director:: String, writer:: String }
+type MovieCredits = { movieId:: Number, director:: String, writer:: String, actors::String}
 
 type TVShowDetails = { seriesId::Number, title::String, year:: String, plot::String, poster:: String, seasons:: [TVShowSeasonDetails] }
 
 type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] }
 
-type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String, released:: String, plot:: String }
+type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String, released:: String, plot:: String, poster:: String }
 
 type TMDBMovieDetails = { results::[{ id::Number, title::String, genre_ids::[Number], release_date::String, overview:: String, poster_path:: String }] }
 
 type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date::String, overview::String, poster_path:: String }] }
 
-type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_number::String, air_date::String, overview::String }
+type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_number::String, air_date::String, overview::String, still_path::String }
 
-type TMDBMovieCredits = { id::Number, cast::[{name::String}], crew::[{name::String, job::String}] }
+type TMDBMovieCredits = { id::Number, credits:: { cast::[{name::String}], crew::[{name::String, job::String}] } }
 
 type TMBMovieGenres = { genres:: [{ id ::Number, name:: String }] }
 
@@ -57,7 +57,7 @@ getState url = do myList <- getMyList url
                   genres <- fetchGenreList
                   mvs <- fetchMoviesDetails (myList.movies)
                   tvs <- fetchTVShowsDetails (myList.tvshows)
-                  return ({ movies: (\m -> m { genres = (\k -> fromJust(Map.lookup k genres)) <$> m.genresIds }) <$> mvs, 
+                  return ({ movies: (\m -> m { genre = joinWith ", " ((\k -> fromJust(Map.lookup k genres)) <$> m.genresIds) }) <$> mvs, 
                             tvshows: tvs })
 
 getMyList ::  String -> Http MyList
@@ -84,20 +84,22 @@ fetchTVShowsSeasonsDetails tvshow = sequence (f <$> (tvshow.seasons))
 fetchTVShowEpisodesDetails :: [TVShowEpisodeSpec] -> Http [TVShowEpisodeDetails]
 fetchTVShowEpisodesDetails episodesSpecs = sequence (fetchTVShowEpisode <$> episodesSpecs)
 
-fetchMovieCredits :: Number -> Http MovieCredits
-fetchMovieCredits movieId = (\details -> { 
+fetchMovieExtraInfo :: Number -> Http MovieCredits
+fetchMovieExtraInfo movieId = (\details -> { 
 		    movieId : details.id,
-        director: joinWith "," ((\x -> x.name) <$> (filter (\x-> x.job == "Director") details.crew)),
-        writer: joinWith "," ((\x -> x.name) <$> (filter (\x-> x.job == "Writer") details.crew))
+        director: joinWith "," ((\x -> x.name) <$> (filter (\x-> x.job == "Director") details.credits.crew)),
+        writer: joinWith "," ((\x -> x.name) <$> (filter (\x-> x.job == "Writer") details.credits.crew)),
+        actors: joinWith "," ((\x -> x.name) <$> details.credits.cast)
        }) <$> response
-  where url = "http://api.themoviedb.org/3/movie/" ++ (show movieId) ++ "/credits?api_key=" ++ apiKey
+  where url = "http://api.themoviedb.org/3/movie/" ++ (show movieId) ++ "?api_key=" ++ apiKey ++ "&append_to_response=credits,releases"
         response = (fetch url) :: Http TMDBMovieCredits
 
 fetchMovie :: MovieSpec -> Http MovieDetails
 fetchMovie movie = do dt <- fetchMovie' movie
-                      cr <- fetchMovieCredits (dt.movieId)
-                      return dt { director = cr.director, 
-                                  writer = cr.writer }
+                      info <- fetchMovieExtraInfo (dt.movieId)
+                      return dt { director = info.director, 
+                                  writer = info.writer,
+                                  actors = info.actors }
 
 fetchMovie' :: MovieSpec ->  Http MovieDetails
 fetchMovie' movie = (\details -> { 
@@ -107,10 +109,11 @@ fetchMovie' movie = (\details -> {
         poster: "http://image.tmdb.org/t/p/w500/" ++ details.poster_path,
         year : details.release_date, 
         genresIds: details.genre_ids,
-        genres:[],
+        genre:"",
 		    source : movie.source,
 		    director: "",
-        writer:"" }) <$> ((\x -> head (x.results)) <$> response)
+        writer:"",
+        actors:"" }) <$> ((\x -> head (x.results)) <$> response)
   where url = "http://api.themoviedb.org/3/search/movie?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (movie.title)
         year = "&year=" ++ movie.year
@@ -123,7 +126,7 @@ fetchTVShow tvshow = (\details -> {
         year : details.first_air_date, 
         plot: details.overview,
         poster: "http://image.tmdb.org/t/p/w500/" ++ details.poster_path,
-		seasons: [] }) <$> ((\x -> head (x.results)) <$> response)
+		    seasons: [] }) <$> ((\x -> head (x.results)) <$> response)
   where url = "http://api.themoviedb.org/3/search/tv?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (tvshow.title)
         year = "&year=" ++ tvshow.year
@@ -136,7 +139,8 @@ fetchTVShowEpisode episode = (\details -> {
         episode: show details.episode_number,
         plot: details.overview,
         released: details.air_date,
-		source : episode.source }) <$> response
+		    source : episode.source,
+        poster: "http://image.tmdb.org/t/p/w500/" ++ details.still_path }) <$> response
   where url = "http://api.themoviedb.org/3/tv/" ++ (show episode.seriesId) ++ 
                 "/season/" ++ episode.season ++
                 "/episode/" ++ episode.episode ++ 
