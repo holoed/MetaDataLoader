@@ -46,7 +46,7 @@ mock('../output/HttpClient', { fetch: function(url) {
               results:[
               { adult:false,
                 backdrop_path:"/x4N74cycZvKu5k3KDERJay4ajR3.jpg",
-                genre_ids:[12,35,878,10751],
+                genre_ids:[12,35],
                 id:105,
                 original_language:"en",
                 original_title:"Back to the future",
@@ -66,7 +66,7 @@ mock('../output/HttpClient', { fetch: function(url) {
               results:[
               { adult:false,
                 backdrop_path:"/x4N74cycZvKu5k3KDERJay4ajR3.jpg",
-                genre_ids:[12,35,878,10751],
+                genre_ids:[12,35],
                 id:653,
                 original_language:"en",
                 original_title:"The Bourne Supremacy",
@@ -153,14 +153,39 @@ mock('../output/HttpClient', { fetch: function(url) {
               id: 105,
               cast: [{name:"Michael J. Fox"}],
               crew: [{name:"Robert Zemeckis", job:"Director"}]
-            })
+            });
 
           if (url == "http://api.themoviedb.org/3/movie/653/credits?api_key=1111111111111111")
             return cb({
               id: 653,
               cast: [{name:"Matt Damon"}],
               crew: [{name:"Paul Greengrass", job:"Director"}]
-            })
+            });
+
+          if (url == "http://api.themoviedb.org/3/genre/movie/list?api_key=1111111111111111")
+            return cb({
+              genres: [
+                {
+                  id: 28,
+                  name: "Action"
+                },
+                {
+                  id: 12,
+                  name: "Adventure"
+                },
+                {
+                  id: 16,
+                  name: "Animation"
+                },
+                {
+                  id: 35,
+                  name: "Comedy"
+                },
+                {
+                  id: 80,
+                  name: "Crime"
+                }]
+            });
       }
   }
 });
@@ -188,6 +213,8 @@ describe ('TMDB MetadataLoader tests', function(){
         movieId: 105,
         title: "Back to the future (The Movie)",
         year: "1985",
+        genres: [],
+        genresIds: [12, 35],
         source: "http://localhost/BackToTheFuture.mp4",
         director: "Robert Zemeckis",
         poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
@@ -250,6 +277,8 @@ describe ('TMDB MetadataLoader tests', function(){
       assert.deepEqual({
         movieId: 105,
         title: "Back to the future (The Movie)",
+        genres: [],
+        genresIds: [12, 35],
         year: "1985",
         source: "http://localhost/BackToTheFuture.mp4",
         director: "Robert Zemeckis",
@@ -259,6 +288,8 @@ describe ('TMDB MetadataLoader tests', function(){
       assert.deepEqual({
         movieId: 653,
         title: "The Bourne Supremacy (The Movie)",
+        genres: [],
+        genresIds: [12, 35],
         year: "2004",
         source: "http://localhost/TheBourneSupremacy.mp4",
         director: "Paul Greengrass",
@@ -360,6 +391,35 @@ describe ('TMDB MetadataLoader tests', function(){
         }], result);
     })
 
+   it ('should get genre list', function() {
+      var Data_Map = require("Data.Map");
+      var result = {};
+      loader.fetchGenreList(function(x){ result = x; })
+      assert.deepEqual(
+      [
+        {
+          value0: 12,
+          value1: "Adventure"
+        },
+        {
+          value0: 16,
+          value1: "Animation"
+        },
+        {
+          value0: 28,
+          value1: "Action"
+        },
+        {
+          value0: 35,
+          value1: "Comedy"
+        },
+        {
+          value0: 80,
+          value1: "Crime"
+        }
+      ], Data_Map.toList(result));
+   })
+
    it ('should get state', function(){
       var result = {};
       loader.getState(testUrl)(function(x){ result = x; })
@@ -369,6 +429,8 @@ describe ('TMDB MetadataLoader tests', function(){
           { movieId:105, 
             title:"Back to the future (The Movie)",
             year:"1985",
+            genres: ["Adventure", "Comedy"],
+            genresIds: [12, 35],
             source:"http://localhost/BackToTheFuture.mp4",
             director:"Robert Zemeckis",
             poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
@@ -377,6 +439,8 @@ describe ('TMDB MetadataLoader tests', function(){
           { movieId:653, 
             title:"The Bourne Supremacy (The Movie)",
             year:"2004",
+            genres: ["Adventure", "Comedy"],
+            genresIds: [12, 35],
             source:"http://localhost/TheBourneSupremacy.mp4",
             director: "Paul Greengrass",
             poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",

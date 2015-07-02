@@ -16,6 +16,9 @@ import HttpClient
 import Config
 import Data.Array.Unsafe 
 import Data.Array (filter)
+import qualified Data.Map as Map 
+import Data.Tuple
+import Data.Maybe.Unsafe 
 
 type MovieSpec = { title:: String, year:: String, source:: String }
 
@@ -27,7 +30,7 @@ type TVShowEpisodeSpec = { seriesId:: Number, title:: String, series:: String, s
 
 type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
-type MovieDetails = { movieId:: Number, title::String, year:: String, source:: String, director:: String, plot:: String, poster::String }
+type MovieDetails = { movieId:: Number, genresIds:: [Number], genres:: [String], title::String, year:: String, source:: String, director:: String, plot:: String, poster::String }
 
 type MovieCredits = { movieId:: Number, director:: String }
 
@@ -37,7 +40,7 @@ type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] 
 
 type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String, released:: String, plot:: String }
 
-type TMDBMovieDetails = { results::[{ id::Number, title::String, release_date::String, overview:: String, poster_path:: String }] }
+type TMDBMovieDetails = { results::[{ id::Number, title::String, genre_ids::[Number], release_date::String, overview:: String, poster_path:: String }] }
 
 type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date::String, overview::String, poster_path:: String }] }
 
@@ -45,16 +48,24 @@ type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_n
 
 type TMDBMovieCredits = { id::Number, cast::[{name::String}], crew::[{name::String, job::String}] }
 
+type TMBMovieGenres = { genres:: [{ id ::Number, name:: String }] }
+
 type State = { movies::[MovieDetails], tvshows::[TVShowDetails] }
 
 getState :: Url -> Http State
 getState url = do myList <- getMyList url
+                  genres <- fetchGenreList
                   mvs <- fetchMoviesDetails (myList.movies)
                   tvs <- fetchTVShowsDetails (myList.tvshows)
-                  return ({ movies: mvs, tvshows: tvs })
+                  return ({ movies: (\m -> m { genres = (\k -> fromJust(Map.lookup k genres)) <$> m.genresIds }) <$> mvs, 
+                            tvshows: tvs })
 
 getMyList ::  String -> Http MyList
 getMyList url = fetch url
+
+fetchGenreList :: Http (Map.Map Number String)
+fetchGenreList = do x <- (fetch ("http://api.themoviedb.org/3/genre/movie/list?api_key=" ++ apiKey) :: Http TMBMovieGenres)
+                    return (Map.fromList ((\y -> Tuple (y.id) (y.name)) <$> x.genres))
 
 fetchMoviesDetails :: [MovieSpec] -> Http [MovieDetails]
 fetchMoviesDetails moviesSpecs = sequence (fetchMovie <$> moviesSpecs)
@@ -93,8 +104,10 @@ fetchMovie' movie = (\details -> {
         plot: details.overview,
         poster: "http://image.tmdb.org/t/p/w500/" ++ details.poster_path,
         year : details.release_date, 
-		source : movie.source,
-		director: "" }) <$> ((\x -> head (x.results)) <$> response)
+        genresIds: details.genre_ids,
+        genres:[],
+		    source : movie.source,
+		    director: "" }) <$> ((\x -> head (x.results)) <$> response)
   where url = "http://api.themoviedb.org/3/search/movie?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (movie.title)
         year = "&year=" ++ movie.year
