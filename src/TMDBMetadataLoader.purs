@@ -30,7 +30,7 @@ type TVShowEpisodeSpec = { seriesId:: Number, title:: String, series:: String, s
 
 type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
-type MovieDetails = { movieId:: Number, genresIds:: [Number], genre:: String, release::String, title::String, year:: String, source:: String, director:: String, actors::String, writer::String, plot:: String, poster::String, runtime::Number }
+type MovieDetails = { movieId:: Number, genresIds:: [Number], genre:: String, release::String, title::String, year:: String, source:: String, director:: String, actors::String, writer::String, plot:: String, poster::String, runtime::Number, popularity::String }
 
 type MovieCredits = { movieId:: Number, director:: String, writer:: String, actors::String, runtime::Number }
 
@@ -40,7 +40,7 @@ type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] 
 
 type TVShowEpisodeDetails = { title::String, season::String, episode:: String, source:: String, released:: String, plot:: String, poster:: String }
 
-type TMDBMovieDetails = { results::[{ id::Number, title::String, genre_ids::[Number], release_date::String, overview:: String, poster_path:: String }] }
+type TMDBMovieDetails = { results::[{ id::Number, title::String, genre_ids::[Number], release_date::String, overview:: String, poster_path:: String, popularity::String }] }
 
 type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date::String, overview::String, poster_path:: String }] }
 
@@ -117,7 +117,8 @@ fetchMovie' movie = (\details -> {
 		    director: "",
         writer:"",
         actors:"",
-        runtime:0 }) <$> ((\x -> head (x.results)) <$> response)
+        runtime:0,
+        popularity: details.popularity }) <$> ((\x -> head (x.results)) <$> response)
   where url = "http://api.themoviedb.org/3/search/movie?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (movie.title)
         year = "&year=" ++ movie.year
