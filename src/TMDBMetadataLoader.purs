@@ -57,7 +57,7 @@ fetchMovieExtraInfo :: Number -> Http MovieCredits
 fetchMovieExtraInfo movieId = (\details -> { 
 		    movieId : details.id,
         director: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Director") details.credits.crew)),
-        writer: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Writer") details.credits.crew)),
+        writer: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Writer" || x.job == "Writing") details.credits.crew)),
         actors: joinWith "," (Array.take 5 ((\x -> x.name) <$> details.credits.cast)),
         rated: (head (details.releases.countries)).certification,
         runtime: details.runtime
