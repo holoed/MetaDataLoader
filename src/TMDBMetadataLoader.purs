@@ -15,7 +15,7 @@ import Data.Foldable
 import HttpClient
 import Config
 import Data.Array.Unsafe 
-import Data.Array (filter)
+import qualified Data.Array as Array 
 import qualified Data.Map as Map 
 import Data.Tuple
 import Data.Maybe.Unsafe 
@@ -30,7 +30,7 @@ type TVShowEpisodeSpec = { seriesId:: Number, title:: String, series:: String, s
 
 type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
-type MovieDetails = { movieId:: Number, genresIds:: [Number], genre:: String, title::String, year:: String, source:: String, director:: String, actors::String, writer::String, plot:: String, poster::String, runtime::Number }
+type MovieDetails = { movieId:: Number, genresIds:: [Number], genre:: String, release::String, title::String, year:: String, source:: String, director:: String, actors::String, writer::String, plot:: String, poster::String, runtime::Number }
 
 type MovieCredits = { movieId:: Number, director:: String, writer:: String, actors::String, runtime::Number }
 
@@ -87,9 +87,9 @@ fetchTVShowEpisodesDetails episodesSpecs = sequence (fetchTVShowEpisode <$> epis
 fetchMovieExtraInfo :: Number -> Http MovieCredits
 fetchMovieExtraInfo movieId = (\details -> { 
 		    movieId : details.id,
-        director: joinWith "," ((\x -> x.name) <$> (filter (\x-> x.job == "Director") details.credits.crew)),
-        writer: joinWith "," ((\x -> x.name) <$> (filter (\x-> x.job == "Writer") details.credits.crew)),
-        actors: joinWith "," ((\x -> x.name) <$> details.credits.cast),
+        director: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Director") details.credits.crew)),
+        writer: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Writer") details.credits.crew)),
+        actors: joinWith "," (Array.take 5 ((\x -> x.name) <$> details.credits.cast)),
         runtime: details.runtime
        }) <$> response
   where url = "http://api.themoviedb.org/3/movie/" ++ (show movieId) ++ "?api_key=" ++ apiKey ++ "&append_to_response=credits,releases"
@@ -109,7 +109,8 @@ fetchMovie' movie = (\details -> {
         title : details.title,
         plot: details.overview,
         poster: "http://image.tmdb.org/t/p/w500/" ++ details.poster_path,
-        year : details.release_date, 
+        year : movie.year,
+        release: details.release_date, 
         genresIds: details.genre_ids,
         genre:"",
 		    source : movie.source,

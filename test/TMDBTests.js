@@ -226,6 +226,7 @@ describe ('TMDB MetadataLoader tests', function(){
         writer: "Robert Zemeckis",
         actors: "Michael J. Fox",
         runtime: 124,
+        release: "1985",
         poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
         plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
       }, result);
@@ -298,6 +299,7 @@ describe ('TMDB MetadataLoader tests', function(){
         writer: "Robert Zemeckis",
         actors: "Michael J. Fox",
         runtime: 124,
+        release: "1985",
         poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
         plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
       }, result[0]);
@@ -312,6 +314,7 @@ describe ('TMDB MetadataLoader tests', function(){
         writer:"",
         actors: "Matt Damon",
         runtime: 126,
+        release: "2004",
         poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
         plot: "The story of Jason Bourne again"
       }, result[1]);
@@ -458,6 +461,7 @@ describe ('TMDB MetadataLoader tests', function(){
             writer:"Robert Zemeckis",
             actors: "Michael J. Fox",
             runtime: 124,
+            release: "1985",
             poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
             plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
           },
@@ -471,6 +475,7 @@ describe ('TMDB MetadataLoader tests', function(){
             writer:"",
             actors:"Matt Damon",
             runtime: 126,
+            release: "2004",
             poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
             plot: "The story of Jason Bourne again"
           }],
