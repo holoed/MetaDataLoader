@@ -59,6 +59,7 @@ fetchMovieExtraInfo movieId = (\details -> {
         director: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Director") details.credits.crew)),
         writer: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Writer") details.credits.crew)),
         actors: joinWith "," (Array.take 5 ((\x -> x.name) <$> details.credits.cast)),
+        rated: (head (details.releases.countries)).certification,
         runtime: details.runtime
        }) <$> response
   where url = "http://api.themoviedb.org/3/movie/" ++ (show movieId) ++ "?api_key=" ++ apiKey ++ "&append_to_response=credits,releases"
@@ -70,7 +71,8 @@ fetchMovie movie = do dt <- fetchMovie' movie
                       return dt { director = info.director, 
                                   writer = info.writer,
                                   actors = info.actors,
-                                  runtime = info.runtime }
+                                  runtime = info.runtime,
+                                  rated = info.rated }
 
 fetchMovie' :: MovieSpec ->  Http MovieDetails
 fetchMovie' movie = (\details -> { 
@@ -87,7 +89,8 @@ fetchMovie' movie = (\details -> {
         writer:"",
         actors:"",
         runtime:0,
-        popularity: details.popularity }) <$> ((\x -> head (x.results)) <$> response)
+        popularity: details.popularity,
+        rated:"" }) <$> ((\x -> head (x.results)) <$> response)
   where url = "http://api.themoviedb.org/3/search/movie?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (movie.title)
         year = "&year=" ++ movie.year

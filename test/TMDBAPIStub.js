@@ -155,6 +155,9 @@ mock('../output/HttpClient', { fetch: function(url) {
               credits: {
                 cast: [{name:"Michael J. Fox"}],
                 crew: [{name:"Robert Zemeckis", job:"Director"}, {name:"Robert Zemeckis", job:"Writer"}]
+              },
+              releases: {
+                countries: [{ certification: "PG" },{ certification: "T" }]
               }
             });
 
@@ -165,6 +168,9 @@ mock('../output/HttpClient', { fetch: function(url) {
               credits: {
                 cast: [{name:"Matt Damon"}],
                 crew: [{name:"Paul Greengrass", job:"Director"}]
+              },
+              releases: {
+                countries: [{ certification: "PG" },{ certification: "T" }]
               }
             });
 
