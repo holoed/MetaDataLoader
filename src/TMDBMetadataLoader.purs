@@ -30,9 +30,9 @@ type TVShowEpisodeSpec = { seriesId:: Number, title:: String, series:: String, s
 
 type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
-type MovieDetails = { movieId:: Number, genresIds:: [Number], genre:: String, title::String, year:: String, source:: String, director:: String, actors::String, writer::String, plot:: String, poster::String }
+type MovieDetails = { movieId:: Number, genresIds:: [Number], genre:: String, title::String, year:: String, source:: String, director:: String, actors::String, writer::String, plot:: String, poster::String, runtime::Number }
 
-type MovieCredits = { movieId:: Number, director:: String, writer:: String, actors::String}
+type MovieCredits = { movieId:: Number, director:: String, writer:: String, actors::String, runtime::Number }
 
 type TVShowDetails = { seriesId::Number, title::String, year:: String, plot::String, poster:: String, seasons:: [TVShowSeasonDetails] }
 
@@ -46,7 +46,7 @@ type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date:
 
 type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_number::String, air_date::String, overview::String, still_path::String }
 
-type TMDBMovieCredits = { id::Number, credits:: { cast::[{name::String}], crew::[{name::String, job::String}] } }
+type TMDBMovieCredits = { id::Number, runtime::Number, credits:: { cast::[{name::String}], crew::[{name::String, job::String}] } }
 
 type TMBMovieGenres = { genres:: [{ id ::Number, name:: String }] }
 
@@ -89,7 +89,8 @@ fetchMovieExtraInfo movieId = (\details -> {
 		    movieId : details.id,
         director: joinWith "," ((\x -> x.name) <$> (filter (\x-> x.job == "Director") details.credits.crew)),
         writer: joinWith "," ((\x -> x.name) <$> (filter (\x-> x.job == "Writer") details.credits.crew)),
-        actors: joinWith "," ((\x -> x.name) <$> details.credits.cast)
+        actors: joinWith "," ((\x -> x.name) <$> details.credits.cast),
+        runtime: details.runtime
        }) <$> response
   where url = "http://api.themoviedb.org/3/movie/" ++ (show movieId) ++ "?api_key=" ++ apiKey ++ "&append_to_response=credits,releases"
         response = (fetch url) :: Http TMDBMovieCredits
@@ -99,7 +100,8 @@ fetchMovie movie = do dt <- fetchMovie' movie
                       info <- fetchMovieExtraInfo (dt.movieId)
                       return dt { director = info.director, 
                                   writer = info.writer,
-                                  actors = info.actors }
+                                  actors = info.actors,
+                                  runtime = info.runtime }
 
 fetchMovie' :: MovieSpec ->  Http MovieDetails
 fetchMovie' movie = (\details -> { 
@@ -113,7 +115,8 @@ fetchMovie' movie = (\details -> {
 		    source : movie.source,
 		    director: "",
         writer:"",
-        actors:"" }) <$> ((\x -> head (x.results)) <$> response)
+        actors:"",
+        runtime:0 }) <$> ((\x -> head (x.results)) <$> response)
   where url = "http://api.themoviedb.org/3/search/movie?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (movie.title)
         year = "&year=" ++ movie.year

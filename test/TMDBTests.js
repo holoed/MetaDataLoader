@@ -151,6 +151,7 @@ mock('../output/HttpClient', { fetch: function(url) {
           if (url == "http://api.themoviedb.org/3/movie/105?api_key=1111111111111111&append_to_response=credits,releases")
             return cb({
               id: 105,
+              runtime:124,
               credits: {
                 cast: [{name:"Michael J. Fox"}],
                 crew: [{name:"Robert Zemeckis", job:"Director"}, {name:"Robert Zemeckis", job:"Writer"}]
@@ -160,6 +161,7 @@ mock('../output/HttpClient', { fetch: function(url) {
           if (url == "http://api.themoviedb.org/3/movie/653?api_key=1111111111111111&append_to_response=credits,releases")
             return cb({
               id: 653,
+              runtime:126,
               credits: {
                 cast: [{name:"Matt Damon"}],
                 crew: [{name:"Paul Greengrass", job:"Director"}]
@@ -223,6 +225,7 @@ describe ('TMDB MetadataLoader tests', function(){
         director: "Robert Zemeckis",
         writer: "Robert Zemeckis",
         actors: "Michael J. Fox",
+        runtime: 124,
         poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
         plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
       }, result);
@@ -237,7 +240,8 @@ describe ('TMDB MetadataLoader tests', function(){
         movieId: 105,
         director: "Robert Zemeckis",
         writer: "Robert Zemeckis",
-        actors: "Michael J. Fox"
+        actors: "Michael J. Fox",
+        runtime:124
       }, result);
     })
 
@@ -293,6 +297,7 @@ describe ('TMDB MetadataLoader tests', function(){
         director: "Robert Zemeckis",
         writer: "Robert Zemeckis",
         actors: "Michael J. Fox",
+        runtime: 124,
         poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
         plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
       }, result[0]);
@@ -306,6 +311,7 @@ describe ('TMDB MetadataLoader tests', function(){
         director: "Paul Greengrass",
         writer:"",
         actors: "Matt Damon",
+        runtime: 126,
         poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
         plot: "The story of Jason Bourne again"
       }, result[1]);
@@ -451,6 +457,7 @@ describe ('TMDB MetadataLoader tests', function(){
             director:"Robert Zemeckis",
             writer:"Robert Zemeckis",
             actors: "Michael J. Fox",
+            runtime: 124,
             poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
             plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
           },
@@ -463,6 +470,7 @@ describe ('TMDB MetadataLoader tests', function(){
             director: "Paul Greengrass",
             writer:"",
             actors:"Matt Damon",
+            runtime: 126,
             poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
             plot: "The story of Jason Bourne again"
           }],
