@@ -56,9 +56,9 @@ fetchTVShowEpisodesDetails episodesSpecs = sequence (fetchTVShowEpisode <$> epis
 fetchMovieExtraInfo :: Number -> Http MovieExtraInfo
 fetchMovieExtraInfo movieId = (\details -> { 
 		    movieId : details.id,
-        director: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Director") details.credits.crew)),
-        writer: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Writer" || x.job == "Screenplay") details.credits.crew)),
-        actors: joinWith "," (Array.take 5 ((\x -> x.name) <$> details.credits.cast)),
+        director: joinWith ", " ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Director") details.credits.crew)),
+        writer: joinWith ", " ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Writer" || x.job == "Screenplay") details.credits.crew)),
+        actors: joinWith ", " (Array.take 5 ((\x -> x.name) <$> details.credits.cast)),
         rated: (head (details.releases.countries)).certification,
         runtime: details.runtime
        }) <$> response
@@ -124,10 +124,10 @@ fetchTVShow' tvshow = (\details -> {
 fetchTVShowExtraInfo :: Number -> Http TVShowExtraInfo
 fetchTVShowExtraInfo tvshowId = (\details -> { 
         tvshowId : details.id,
-        actors: joinWith "," (Array.take 5 ((\x -> x.name) <$> details.credits.cast)),
+        actors: joinWith ", " (Array.take 5 ((\x -> x.name) <$> details.credits.cast)),
         runtime: head details.episode_run_time,
         popularity: details.popularity,
-        genre: joinWith "," (Array.take 5 ((\x -> x.name) <$> details.genres))
+        genre: joinWith ", " (Array.take 5 ((\x -> x.name) <$> details.genres))
        }) <$> response
   where url = "http://api.themoviedb.org/3/tv/" ++ (show tvshowId) ++ "?api_key=" ++ apiKey ++ "&append_to_response=credits,content_ratings"
         response = (fetch url) :: Http TMDBTVShowExtraInfo
@@ -150,6 +150,7 @@ fetchTVShowEpisode episode = (\details -> {
                 "?api_key=" ++ apiKey
         response = (fetch url) :: Http TMDBTVShowEpisodeDetails  
 
+foreign import encodeURI :: String -> String
 
 replaceSpaceWithPlus :: String -> String
-replaceSpaceWithPlus =  (joinWith "+") <<< (split " ") 
+replaceSpaceWithPlus =  encodeURI

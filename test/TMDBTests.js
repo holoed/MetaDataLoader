@@ -15,7 +15,7 @@ describe ('TMDB MetadataLoader tests', function(){
     })
 
     it ('should replace space with plus', function() {
-      assert.equal("Back+to+the+future", loader.replaceSpaceWithPlus("Back to the future"));
+      assert.equal("Back%20to%20the%20future", loader.replaceSpaceWithPlus("Back to the future"));
     })
 
     it ('should fetch movie details', function() {

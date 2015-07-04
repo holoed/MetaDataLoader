@@ -40,7 +40,7 @@ mock('../output/HttpClient', { fetch: function(url) {
         return function(cb) {
           if (url == testUrl)
             return cb(testMyList);
-          if (url == "http://api.themoviedb.org/3/search/movie?api_key=1111111111111111&query=Back+to+the+future&year=1985") 
+          if (url == "http://api.themoviedb.org/3/search/movie?api_key=1111111111111111&query=Back%20to%20the%20future&year=1985") 
             return cb({
               page:1,
               results:[
@@ -60,7 +60,7 @@ mock('../output/HttpClient', { fetch: function(url) {
                 vote_count:2337
               }], total_pages:1, total_results:2});
 
-          if (url == "http://api.themoviedb.org/3/search/movie?api_key=1111111111111111&query=The+Bourne+Supremacy&year=2004") 
+          if (url == "http://api.themoviedb.org/3/search/movie?api_key=1111111111111111&query=The%20Bourne%20Supremacy&year=2004") 
             return cb({
               page:1,
               results:[
@@ -114,7 +114,7 @@ mock('../output/HttpClient', { fetch: function(url) {
               vote_average:0.0,
               vote_count:0});
 
-          if (url == "http://api.themoviedb.org/3/search/tv?api_key=1111111111111111&query=Star+Trek+The+Next+Generation&year=1987")
+          if (url == "http://api.themoviedb.org/3/search/tv?api_key=1111111111111111&query=Star%20Trek%20The%20Next%20Generation&year=1987")
             return cb({
               page:1,
               results:[
