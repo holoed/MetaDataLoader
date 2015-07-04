@@ -14,9 +14,9 @@ type MovieDetails = { movieId:: Number, genresIds:: [Number], genre:: String, re
 
 type MovieExtraInfo = { movieId:: Number, director:: String, writer:: String, actors::String, runtime::Number, rated::String }
 
-type TVShowDetails = { seriesId::Number, title::String, year:: String, plot::String, poster:: String, seasons:: [TVShowSeasonDetails], actors::String, runtime::Number, popularity::Number, genre::String }
+type TVShowDetails = { seriesId::Number, title::String, year:: String, plot::String, poster:: String, seasons:: [TVShowSeasonDetails], actors::String, runtime::Number, popularity::Number, genre::String, rating::String }
 
-type TVShowExtraInfo = { tvshowId:: Number, actors::String, runtime::Number, popularity::Number, genre::String }
+type TVShowExtraInfo = { tvshowId:: Number, actors::String, runtime::Number, popularity::Number, genre::String, rating::String }
 
 type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] }
 
@@ -41,7 +41,8 @@ type TMDBTVShowExtraInfo = {
 	credits:: { cast::[{name::String}], crew::[{name::String, job::String}] },
 	first_air_date:: String,
 	genres::[{id::String, name::String}],
-	popularity:: Number
+	popularity:: Number,
+	results:: [{ rating::String }]
 
 }
 

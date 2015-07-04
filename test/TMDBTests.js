@@ -70,6 +70,7 @@ describe ('TMDB MetadataLoader tests', function(){
         popularity: 1.993303,
         runtime: 120,
         genre:"Crime",
+        rating:"TV-MA",
         poster: "http://image.tmdb.org/t/p/w500//1tUvH4fn8ZDXUHGgYlgxCueOCXi.jpg",
         plot:"Columbo is an American detective mystery television film series, starring Peter Falk as Columbo, a homicide detective with the Los Angeles Police Department. The character and television show were created by William Link and Richard Levinson. The show popularized the inverted detective story format. Almost every episode began by showing the commission of the crime and its perpetrator. The series has no \"whodunit\" element. The plot mainly revolves around how the perpetrator, whose identity is already known to the audience, will finally be caught and exposed.\n\nThe title character is a friendly, verbose, disheveled-looking police detective who is consistently underestimated by his suspects. Most people are initially reassured and distracted by his circumstantial speech, then increasingly irritated by his pestering behavior. Despite his unprepossessing appearance and apparent absentmindedness, he shrewdly solves all of his cases and secures all evidence needed for indictment. His formidable eye for detail and meticulously dedicated approach, though apparent to the viewer, often become clear to the killer only late in the storyline.\n\nThe episodes are all movie-length, between 73 and 100 minutes long. The series was once broadcast on over 80 networks, spanning 44 countries. In 1997, \"Murder by the Book\" was ranked No. 16 on TV Guide's 100 Greatest Episodes of All Time. and in 1999, the magazine ranked Lt. Columbo No. 7 on its 50 Greatest TV Characters of All Time list. In 2012, the program was chosen as the third best cop or legal show on Best in TV: The Greatest TV Shows of Our Time. In 2013 TV Guide included it in its list of The 60 Greatest Dramas of All Time. In 2013, Writers Guild of America ranked it No. 57 in the list of 101 Best Written TV Series.",
         seasons: []
@@ -86,7 +87,8 @@ describe ('TMDB MetadataLoader tests', function(){
         actors: "Peter Falk",
         runtime:120,
         popularity: 1.993303,
-        genre: "Crime"
+        genre: "Crime",
+        rating:"TV-MA"
       }, result);
     })
 
@@ -219,6 +221,7 @@ describe ('TMDB MetadataLoader tests', function(){
           popularity: 1.993303,
           runtime: 120,
           genre:"Crime",
+          rating:"TV-MA",
           poster: "http://image.tmdb.org/t/p/w500//1tUvH4fn8ZDXUHGgYlgxCueOCXi.jpg",
           plot:"Columbo is an American detective mystery television film series, starring Peter Falk as Columbo, a homicide detective with the Los Angeles Police Department. The character and television show were created by William Link and Richard Levinson. The show popularized the inverted detective story format. Almost every episode began by showing the commission of the crime and its perpetrator. The series has no \"whodunit\" element. The plot mainly revolves around how the perpetrator, whose identity is already known to the audience, will finally be caught and exposed.\n\nThe title character is a friendly, verbose, disheveled-looking police detective who is consistently underestimated by his suspects. Most people are initially reassured and distracted by his circumstantial speech, then increasingly irritated by his pestering behavior. Despite his unprepossessing appearance and apparent absentmindedness, he shrewdly solves all of his cases and secures all evidence needed for indictment. His formidable eye for detail and meticulously dedicated approach, though apparent to the viewer, often become clear to the killer only late in the storyline.\n\nThe episodes are all movie-length, between 73 and 100 minutes long. The series was once broadcast on over 80 networks, spanning 44 countries. In 1997, \"Murder by the Book\" was ranked No. 16 on TV Guide's 100 Greatest Episodes of All Time. and in 1999, the magazine ranked Lt. Columbo No. 7 on its 50 Greatest TV Characters of All Time list. In 2012, the program was chosen as the third best cop or legal show on Best in TV: The Greatest TV Shows of Our Time. In 2013 TV Guide included it in its list of The 60 Greatest Dramas of All Time. In 2013, Writers Guild of America ranked it No. 57 in the list of 101 Best Written TV Series.",
           seasons:[
@@ -248,6 +251,7 @@ describe ('TMDB MetadataLoader tests', function(){
           popularity: 1.992,
           runtime: 60,
           genre: "SciFi",
+          rating:"TV-MA",
           plot:"",
           seasons:[
             { season:"Season 7",
@@ -344,6 +348,7 @@ describe ('TMDB MetadataLoader tests', function(){
           genre: "Crime",
           popularity: 1.993303,
           runtime: 120,
+          rating:"TV-MA",
           poster: "http://image.tmdb.org/t/p/w500//1tUvH4fn8ZDXUHGgYlgxCueOCXi.jpg",
           plot:"Columbo is an American detective mystery television film series, starring Peter Falk as Columbo, a homicide detective with the Los Angeles Police Department. The character and television show were created by William Link and Richard Levinson. The show popularized the inverted detective story format. Almost every episode began by showing the commission of the crime and its perpetrator. The series has no \"whodunit\" element. The plot mainly revolves around how the perpetrator, whose identity is already known to the audience, will finally be caught and exposed.\n\nThe title character is a friendly, verbose, disheveled-looking police detective who is consistently underestimated by his suspects. Most people are initially reassured and distracted by his circumstantial speech, then increasingly irritated by his pestering behavior. Despite his unprepossessing appearance and apparent absentmindedness, he shrewdly solves all of his cases and secures all evidence needed for indictment. His formidable eye for detail and meticulously dedicated approach, though apparent to the viewer, often become clear to the killer only late in the storyline.\n\nThe episodes are all movie-length, between 73 and 100 minutes long. The series was once broadcast on over 80 networks, spanning 44 countries. In 1997, \"Murder by the Book\" was ranked No. 16 on TV Guide's 100 Greatest Episodes of All Time. and in 1999, the magazine ranked Lt. Columbo No. 7 on its 50 Greatest TV Characters of All Time list. In 2012, the program was chosen as the third best cop or legal show on Best in TV: The Greatest TV Shows of Our Time. In 2013 TV Guide included it in its list of The 60 Greatest Dramas of All Time. In 2013, Writers Guild of America ranked it No. 57 in the list of 101 Best Written TV Series.",
           seasons: [ { season: 'Season 2',
@@ -370,6 +375,7 @@ describe ('TMDB MetadataLoader tests', function(){
           popularity: 1.992,
           runtime: 60,
           plot:"",
+          rating:"TV-MA",
           seasons: [ { season: 'Season 7',
                        episodes: [{
                          title: "Interface",
