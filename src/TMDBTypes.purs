@@ -42,7 +42,7 @@ type TMDBTVShowExtraInfo = {
 	first_air_date:: String,
 	genres::[{id::String, name::String}],
 	popularity:: Number,
-	results:: [{ rating::String }]
+	content_ratings::{ results:: [{ rating::String }] }
 
 }
 

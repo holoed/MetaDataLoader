@@ -130,7 +130,7 @@ fetchTVShowExtraInfo tvshowId = (\details -> {
         runtime: head details.episode_run_time,
         popularity: details.popularity,
         genre: joinWith ", " (Array.take 5 ((\x -> x.name) <$> details.genres)),
-        rating: joinWith " " (Array.take 1 ((\x -> x.rating) <$> details.results))
+        rating: joinWith " " (Array.take 1 ((\x -> x.rating) <$> details.content_ratings.results))
        }) <$> response
   where url = "http://api.themoviedb.org/3/tv/" ++ (show tvshowId) ++ "?api_key=" ++ apiKey ++ "&append_to_response=credits,content_ratings"
         response = (fetch url) :: Http TMDBTVShowExtraInfo

@@ -212,7 +212,9 @@ mock('../output/HttpClient', { fetch: function(url) {
                   name: "Peter Falk"
                 }]
               },
-              results: [{ rating: "TV-MA" }]
+              content_ratings: {
+                results: [{ rating: "TV-MA" }]
+              }
             });
 
           if (url == "http://api.themoviedb.org/3/tv/234?api_key=1111111111111111&append_to_response=credits,content_ratings")
@@ -228,7 +230,9 @@ mock('../output/HttpClient', { fetch: function(url) {
                   name: "Patrick Stewart"
                 }]
               },
-              results: [{ rating: "TV-MA" }]
+              content_ratings: {
+                results: [{ rating: "TV-MA" }]
+              }
             });
       }
   }
