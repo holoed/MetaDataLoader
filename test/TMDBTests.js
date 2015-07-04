@@ -83,10 +83,13 @@ describe ('TMDB MetadataLoader tests', function(){
       })(function (x){ result = x; });
       assert.deepEqual({
         title: "The most crucial game",
-        released: "05 Nov 1972",
+        release: "05 Nov 1972",
         poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
         season: "2",
         episode: "3",
+        actors: "James Gregory,Dean Jagger",
+        director: "Jeremy Kagan",
+        writer:"",
         plot: "One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
         source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
       }, result);
@@ -153,7 +156,10 @@ describe ('TMDB MetadataLoader tests', function(){
               plot: "One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
               season: "2",
               episode: "3",
-              released: "05 Nov 1972",
+              actors: "James Gregory,Dean Jagger",
+              director: "Jeremy Kagan",
+              writer:"",
+              release: "05 Nov 1972",
               poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
               source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
             }]
@@ -198,10 +204,13 @@ describe ('TMDB MetadataLoader tests', function(){
               episodes:[
                 { title:"The most crucial game",
                  plot: "One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
-                 released:"05 Nov 1972",
+                 release:"05 Nov 1972",
                  poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
                  season:"2",
                  episode:"3",
+                 actors: "James Gregory,Dean Jagger",
+                 director: "Jeremy Kagan",
+                 writer:"",
                  source:"http://localhost/Columbo/TheMostCrucialGame.mp4"
                 }
               ]
@@ -219,10 +228,13 @@ describe ('TMDB MetadataLoader tests', function(){
               episodes:[
                 { title:"Interface",
                   plot: "",
-                  released:"02 Oct 1993",
+                  release:"02 Oct 1993",
                   poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
                   season:"7",
                   episode:"3",
+                  director: "",
+                  writer: "",
+                  actors: "",
                   source:"http://localhost/STTNG/Interface.mp4"
                 }
               ]
@@ -308,10 +320,14 @@ describe ('TMDB MetadataLoader tests', function(){
                        episodes: [{
                          title: "The most crucial game",
                          plot: "One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
-                         released: "05 Nov 1972",
+                         release: "05 Nov 1972",
                          poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
                          season: "2",
                          episode: "3",
+                         director: "",
+                         actors: "James Gregory,Dean Jagger",
+                         director: "Jeremy Kagan",
+                         writer:"",
                          source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
                        }] }]
         },
@@ -324,10 +340,13 @@ describe ('TMDB MetadataLoader tests', function(){
                        episodes: [{
                          title: "Interface",
                          plot:"",
-                         released: "02 Oct 1993",
+                         release: "02 Oct 1993",
                          poster: "http://image.tmdb.org/t/p/w500//ulep93cZ0yOChg7bRJROpUzcQGF.jpg",
                          season: "7",
                          episode: "3",
+                         director: "",
+                         writer: "",
+                         actors: "",
                          source:"http://localhost/STTNG/Interface.mp4"
                        }] }]
         }]

@@ -115,8 +115,11 @@ fetchTVShowEpisode episode = (\details -> {
         season: show details.season_number,
         episode: show details.episode_number,
         plot: details.overview,
-        released: details.air_date,
+        release: details.air_date,
 		    source : episode.source,
+        director: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Director") details.crew)),
+        writer: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Writer" || x.job == "Screenplay") details.crew)),
+        actors: joinWith "," (Array.take 5 ((\x -> x.name) <$> details.guest_stars)),
         poster: "http://image.tmdb.org/t/p/w500/" ++ details.still_path }) <$> response
   where url = "http://api.themoviedb.org/3/tv/" ++ (show episode.seriesId) ++ 
                 "/season/" ++ episode.season ++

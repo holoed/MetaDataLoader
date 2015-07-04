@@ -102,9 +102,9 @@ mock('../output/HttpClient', { fetch: function(url) {
           if (url == "http://api.themoviedb.org/3/tv/873/season/2/episode/3?api_key=1111111111111111")
             return cb({
               air_date:"05 Nov 1972",
-              crew:[],
+              crew: [{ name: "Jeremy Kagan", job: "Director" }],
+              guest_stars: [{ name: "James Gregory" }, { name: "Dean Jagger" }],
               episode_number:3,
-              guest_stars:[],
               name:"The most crucial game",
               overview:"One member of a mystery-writing-team decides to kill his more talented partner when the better writer decides to go solo.",
               id:48577,
