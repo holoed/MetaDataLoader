@@ -198,6 +198,36 @@ mock('../output/HttpClient', { fetch: function(url) {
                   name: "Crime"
                 }]
             });
+
+          if (url == "http://api.themoviedb.org/3/tv/873?api_key=1111111111111111&append_to_response=credits,releases")
+            return cb({
+              id:873,
+              popularity: 1.993303,
+              first_air_date: "1968-02-20",
+              episode_run_time: [120],
+              genres: [{ id: 80, name: "Crime" }],
+              credits: {
+                cast: [{
+                  character: "Columbo",
+                  name: "Peter Falk"
+                }]
+              }
+            });
+
+          if (url == "http://api.themoviedb.org/3/tv/234?api_key=1111111111111111&append_to_response=credits,releases")
+            return cb({
+              id:234,
+              popularity: 1.992,
+              first_air_date: "1982-02-20",
+              episode_run_time: [60],
+              genres: [{ id: 80, name: "SciFi" }],
+              credits: {
+                cast: [{
+                  character: "Picard",
+                  name: "Patrick Stewart"
+                }]
+              }
+            });
       }
   }
 });

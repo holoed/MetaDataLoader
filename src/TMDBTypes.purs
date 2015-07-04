@@ -12,9 +12,11 @@ type MyList = { movies:: [MovieSpec], tvshows:: [TVShowSpec] }
 
 type MovieDetails = { movieId:: Number, genresIds:: [Number], genre:: String, release::String, title::String, year:: String, source:: String, director:: String, actors::String, writer::String, plot:: String, poster::String, runtime::Number, popularity::String, rated::String }
 
-type MovieCredits = { movieId:: Number, director:: String, writer:: String, actors::String, runtime::Number, rated::String }
+type MovieExtraInfo = { movieId:: Number, director:: String, writer:: String, actors::String, runtime::Number, rated::String }
 
-type TVShowDetails = { seriesId::Number, title::String, year:: String, plot::String, poster:: String, seasons:: [TVShowSeasonDetails] }
+type TVShowDetails = { seriesId::Number, title::String, year:: String, plot::String, poster:: String, seasons:: [TVShowSeasonDetails], actors::String, runtime::Number, popularity::Number }
+
+type TVShowExtraInfo = { tvshowId:: Number, actors::String, runtime::Number, popularity::Number }
 
 type TVShowSeasonDetails = { season:: String, episodes:: [TVShowEpisodeDetails] }
 
@@ -26,11 +28,21 @@ type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date:
 
 type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_number::String, air_date::String, overview::String, still_path::String, crew::[{name::String, job::String}], guest_stars::[{name::String}] }
 
-type TMDBMovieCredits = { 
+type TMDBMovieExtraInfo = { 
 	id::Number, 
 	runtime::Number, 
 	credits:: { cast::[{name::String}], crew::[{name::String, job::String}] },
 	releases:: { countries::[{ certification::String }] }
+}
+
+type TMDBTVShowExtraInfo = { 
+	id::Number, 
+	episode_run_time::[Number], 
+	credits:: { cast::[{name::String}], crew::[{name::String, job::String}] },
+	first_air_date:: String,
+	genre::[{id::String, name::String}],
+	popularity:: Number
+
 }
 
 type TMBMovieGenres = { genres:: [{ id ::Number, name:: String }] }
