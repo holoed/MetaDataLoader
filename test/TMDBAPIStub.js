@@ -199,7 +199,7 @@ mock('../output/HttpClient', { fetch: function(url) {
                 }]
             });
 
-          if (url == "http://api.themoviedb.org/3/tv/873?api_key=1111111111111111&append_to_response=credits,releases")
+          if (url == "http://api.themoviedb.org/3/tv/873?api_key=1111111111111111&append_to_response=credits,content_ratings")
             return cb({
               id:873,
               popularity: 1.993303,
@@ -214,7 +214,7 @@ mock('../output/HttpClient', { fetch: function(url) {
               }
             });
 
-          if (url == "http://api.themoviedb.org/3/tv/234?api_key=1111111111111111&append_to_response=credits,releases")
+          if (url == "http://api.themoviedb.org/3/tv/234?api_key=1111111111111111&append_to_response=credits,content_ratings")
             return cb({
               id:234,
               popularity: 1.992,

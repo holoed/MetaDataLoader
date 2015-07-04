@@ -101,7 +101,8 @@ fetchTVShow tvshow = do dt <- fetchTVShow' tvshow
                         info <- fetchTVShowExtraInfo (dt.seriesId)
                         return dt { actors = info.actors,
                                     runtime = info.runtime,
-                                    popularity = info.popularity }
+                                    popularity = info.popularity,
+                                    genre = info.genre }
 
 fetchTVShow' :: TVShowSpec ->  Http TVShowDetails
 fetchTVShow' tvshow = (\details -> { 
@@ -113,7 +114,8 @@ fetchTVShow' tvshow = (\details -> {
 		    seasons: [],
         actors:"",
         runtime:0,
-        popularity: 0 }) <$> ((\x -> head (x.results)) <$> response)
+        popularity: 0,
+        genre:"" }) <$> ((\x -> head (x.results)) <$> response)
   where url = "http://api.themoviedb.org/3/search/tv?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (tvshow.title)
         year = "&year=" ++ tvshow.year
@@ -124,9 +126,10 @@ fetchTVShowExtraInfo tvshowId = (\details -> {
         tvshowId : details.id,
         actors: joinWith "," (Array.take 5 ((\x -> x.name) <$> details.credits.cast)),
         runtime: head details.episode_run_time,
-        popularity: details.popularity
+        popularity: details.popularity,
+        genre: joinWith "," (Array.take 5 ((\x -> x.name) <$> details.genres))
        }) <$> response
-  where url = "http://api.themoviedb.org/3/tv/" ++ (show tvshowId) ++ "?api_key=" ++ apiKey ++ "&append_to_response=credits,releases"
+  where url = "http://api.themoviedb.org/3/tv/" ++ (show tvshowId) ++ "?api_key=" ++ apiKey ++ "&append_to_response=credits,content_ratings"
         response = (fetch url) :: Http TMDBTVShowExtraInfo
 
 fetchTVShowEpisode :: TVShowEpisodeSpec -> Http TVShowEpisodeDetails
