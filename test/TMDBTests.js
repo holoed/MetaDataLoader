@@ -44,7 +44,7 @@ describe ('TMDB MetadataLoader tests', function(){
 
     it ('should fetch movie details of not available movie', function() {
       var result = {};
-      loader.fetchMovie({ title: "I Sette Re di Roma", year: "1989", source: "http://localhost/ISetteReDiRoma.mp4"})(function (x){
+      loader.fetchMovie({ title: "I Sette Re di Roma", year: "1989", source: "http://localhost/ISetteReDiRoma.mp4", poster:"http://localhost/poster.jpg"})(function (x){
         result = x;
       });
       assert.deepEqual({
@@ -63,6 +63,7 @@ describe ('TMDB MetadataLoader tests', function(){
         title: "I Sette Re di Roma",
         writer: "",
         year: "1989",
+        poster: "http://localhost/poster.jpg"
        }, result);
     })
 
@@ -347,7 +348,8 @@ describe ('TMDB MetadataLoader tests', function(){
             source: "http://localhost/ISetteReDiRoma.mp4",
             title: "I Sette Re di Roma",
             writer: "",
-            year: "1989"
+            year: "1989",
+            poster: "http://localhost/poster.jpg"
           },
           { movieId:105,
             title:"Back to the future (The Movie)",

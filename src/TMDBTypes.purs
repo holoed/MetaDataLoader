@@ -1,6 +1,6 @@
 module TMDBTypes where
 
-type MovieSpec = { title:: String, year:: String, source:: String }
+type MovieSpec = { title:: String, year:: String, source:: String, poster:: String }
 
 type TVShowSpec = { seriesId:: Number, title:: String, year:: String, source:: String, seasons:: [TVShowSeasonSpec] }
 

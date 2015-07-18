@@ -96,7 +96,8 @@ fetchMovie' movie = (\results ->
           movieId = -1,
           title = movie.title,
           year = movie.year,
-          source = movie.source
+          source = movie.source,
+          poster = movie.poster
           }) <$> ((\x -> x.results) <$> response)
 
   where url = "http://api.themoviedb.org/3/search/movie?api_key=" ++ apiKey ++ query ++ year

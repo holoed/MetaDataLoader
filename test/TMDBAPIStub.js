@@ -7,7 +7,8 @@ var testMyList = {
     {
       source: "http://localhost/ISetteReDiRoma.mp4",
       title: "I Sette Re di Roma",
-      year: "1989"
+      year: "1989",
+      poster: "http://localhost/poster.jpg"
     },
     {
       source: "http://localhost/BackToTheFuture.mp4",
