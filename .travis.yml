@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "0.10"
 install:
-  - "npm install bower grunt-cli pulp@3.2.2 purescript mocha  -g"
+  - "npm install bower grunt-cli pulp@3.2.2 purescript@0.6.9.5 mocha  -g"
   - "bower install -f"
   - "npm install mock-require"
 script: 
