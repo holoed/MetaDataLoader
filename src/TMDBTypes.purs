@@ -28,16 +28,16 @@ type TMDBTVShowDetails = { results::[{ id::Number, name::String, first_air_date:
 
 type TMDBTVShowEpisodeDetails = { name::String, season_number::String, episode_number::String, air_date::String, overview::String, still_path::String, crew::[{name::String, job::String}], guest_stars::[{name::String}] }
 
-type TMDBMovieExtraInfo = { 
-	id::Number, 
-	runtime::Number, 
+type TMDBMovieExtraInfo = {
+	id::Number,
+	runtime::Number,
 	credits:: { cast::[{name::String}], crew::[{name::String, job::String}] },
 	releases:: { countries::[{ certification::String }] }
 }
 
-type TMDBTVShowExtraInfo = { 
-	id::Number, 
-	episode_run_time::[Number], 
+type TMDBTVShowExtraInfo = {
+	id::Number,
+	episode_run_time::[Number],
 	credits:: { cast::[{name::String}], crew::[{name::String, job::String}] },
 	first_air_date:: String,
 	genres::[{id::String, name::String}],
@@ -49,3 +49,32 @@ type TMDBTVShowExtraInfo = {
 type TMBMovieGenres = { genres:: [{ id ::Number, name:: String }] }
 
 type State = { movies::[MovieDetails], tvshows::[TVShowDetails] }
+
+emptyMovie :: MovieDetails
+emptyMovie = {
+		    movieId : -1,
+        title : "",
+        plot: "",
+        poster: "",
+        year : "",
+        release: "",
+        genresIds: [],
+        genre:"",
+		    source : "",
+		    director: "",
+        writer:"",
+        actors:"",
+        runtime:0,
+        popularity: "",
+        rated:""
+			}
+
+emptyExtraInfo :: MovieExtraInfo
+emptyExtraInfo = {
+	     movieId: -1,
+			 director: "",
+			 writer: "",
+			 actors: "",
+			 runtime: 0,
+			 rated: ""
+		 }

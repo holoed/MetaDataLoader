@@ -5,6 +5,11 @@ var testUrl = "http://192.168.0.24/MyMoviesCatalog.json";
 var testMyList = {
     movies: [
     {
+      source: "http://localhost/ISetteReDiRoma.mp4",
+      title: "I Sette Re di Roma",
+      year: "1989"
+    },
+    {
       source: "http://localhost/BackToTheFuture.mp4",
       title: "Back to the future",
       year: "1985"
@@ -40,7 +45,7 @@ mock('../output/HttpClient', { fetch: function(url) {
         return function(cb) {
           if (url == testUrl)
             return cb(testMyList);
-          if (url == "http://api.themoviedb.org/3/search/movie?api_key=1111111111111111&query=Back%20to%20the%20future&year=1985") 
+          if (url == "http://api.themoviedb.org/3/search/movie?api_key=1111111111111111&query=Back%20to%20the%20future&year=1985")
             return cb({
               page:1,
               results:[
@@ -60,7 +65,7 @@ mock('../output/HttpClient', { fetch: function(url) {
                 vote_count:2337
               }], total_pages:1, total_results:2});
 
-          if (url == "http://api.themoviedb.org/3/search/movie?api_key=1111111111111111&query=The%20Bourne%20Supremacy&year=2004") 
+          if (url == "http://api.themoviedb.org/3/search/movie?api_key=1111111111111111&query=The%20Bourne%20Supremacy&year=2004")
             return cb({
               page:1,
               results:[
@@ -234,6 +239,8 @@ mock('../output/HttpClient', { fetch: function(url) {
                 results: [{ rating: "TV-MA" }]
               }
             });
+
+          return cb({ page:1, results:[] })
       }
   }
 });

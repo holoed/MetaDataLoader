@@ -14,11 +14,11 @@ import Data.Traversable
 import Data.Foldable
 import HttpClient
 import Config
-import Data.Array.Unsafe 
-import qualified Data.Array as Array 
-import qualified Data.Map as Map 
+import Data.Array.Unsafe
+import qualified Data.Array as Array
+import qualified Data.Map as Map
 import Data.Tuple
-import Data.Maybe.Unsafe 
+import Data.Maybe.Unsafe
 import TMDBTypes
 
 getState :: Url -> Http State
@@ -26,7 +26,7 @@ getState url = do myList <- getMyList url
                   genres <- fetchGenreList
                   mvs <- fetchMoviesDetails (myList.movies)
                   tvs <- fetchTVShowsDetails (myList.tvshows)
-                  return ({ movies: (\m -> m { genre = joinWith ", " ((\k -> fromJust(Map.lookup k genres)) <$> m.genresIds) }) <$> mvs, 
+                  return ({ movies: (\m -> m { genre = joinWith ", " ((\k -> fromJust(Map.lookup k genres)) <$> m.genresIds) }) <$> mvs,
                             tvshows: tvs })
 
 getMyList ::  String -> Http MyList
@@ -47,14 +47,14 @@ fetchTVShowsDetails tvShowsSpecs = sequence (f <$> tvShowsSpecs)
 
 fetchTVShowsSeasonsDetails :: TVShowSpec -> Http [TVShowSeasonDetails]
 fetchTVShowsSeasonsDetails tvshow = sequence (f <$> (tvshow.seasons))
-    where f x = (\eps -> { season : x.season, episodes : eps }) <$> 
+    where f x = (\eps -> { season : x.season, episodes : eps }) <$>
                 fetchTVShowEpisodesDetails ((\v -> v { seriesId = tvshow.seriesId }) <$> x.episodes)
 
 fetchTVShowEpisodesDetails :: [TVShowEpisodeSpec] -> Http [TVShowEpisodeDetails]
 fetchTVShowEpisodesDetails episodesSpecs = sequence (fetchTVShowEpisode <$> episodesSpecs)
 
 fetchMovieExtraInfo :: Number -> Http MovieExtraInfo
-fetchMovieExtraInfo movieId = (\details -> { 
+fetchMovieExtraInfo movieId = (\details -> {
 		    movieId : details.id,
         director: joinWith ", " ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Director") details.credits.crew)),
         writer: joinWith ", " ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Writer" || x.job == "Screenplay") details.credits.crew)),
@@ -67,30 +67,38 @@ fetchMovieExtraInfo movieId = (\details -> {
 
 fetchMovie :: MovieSpec -> Http MovieDetails
 fetchMovie movie = do dt <- fetchMovie' movie
-                      info <- fetchMovieExtraInfo (dt.movieId)
-                      return dt { director = info.director, 
+                      info <- if (dt.movieId > -1)
+                              then fetchMovieExtraInfo (dt.movieId)
+                              else return emptyExtraInfo
+                      return dt { director = info.director,
                                   writer = info.writer,
                                   actors = info.actors,
                                   runtime = info.runtime,
                                   rated = info.rated }
 
 fetchMovie' :: MovieSpec ->  Http MovieDetails
-fetchMovie' movie = (\details -> { 
-		movieId : details.id,
-        title : details.title,
-        plot: details.overview,
-        poster: "http://image.tmdb.org/t/p/w500/" ++ details.poster_path,
-        year : movie.year,
-        release: details.release_date, 
-        genresIds: details.genre_ids,
-        genre:"",
-		    source : movie.source,
-		    director: "",
-        writer:"",
-        actors:"",
-        runtime:0,
-        popularity: details.popularity,
-        rated:"" }) <$> ((\x -> head (x.results)) <$> response)
+fetchMovie' movie = (\results ->
+        if ((Array.length results) > 0)
+        then
+         let details = (head results) in
+          emptyMovie {
+  		    movieId = details.id,
+          title = details.title,
+          plot = details.overview,
+          poster = "http://image.tmdb.org/t/p/w500/" ++ details.poster_path,
+          year = movie.year,
+          release = details.release_date,
+          genresIds = details.genre_ids,
+  		    source = movie.source,
+          popularity = details.popularity
+           }
+        else emptyMovie {
+          movieId = -1,
+          title = movie.title,
+          year = movie.year,
+          source = movie.source
+          }) <$> ((\x -> x.results) <$> response)
+
   where url = "http://api.themoviedb.org/3/search/movie?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (movie.title)
         year = "&year=" ++ movie.year
@@ -106,10 +114,10 @@ fetchTVShow tvshow = do dt <- fetchTVShow' tvshow
                                     rating = info.rating }
 
 fetchTVShow' :: TVShowSpec ->  Http TVShowDetails
-fetchTVShow' tvshow = (\details -> { 
+fetchTVShow' tvshow = (\details -> {
 		    seriesId: details.id,
         title : details.name,
-        year : details.first_air_date, 
+        year : details.first_air_date,
         plot: details.overview,
         poster: "http://image.tmdb.org/t/p/w500/" ++ details.poster_path,
 		    seasons: [],
@@ -121,10 +129,10 @@ fetchTVShow' tvshow = (\details -> {
   where url = "http://api.themoviedb.org/3/search/tv?api_key=" ++ apiKey ++ query ++ year
         query = "&query=" ++ replaceSpaceWithPlus (tvshow.title)
         year = "&year=" ++ tvshow.year
-        response = (fetch url) :: Http TMDBTVShowDetails  
+        response = (fetch url) :: Http TMDBTVShowDetails
 
 fetchTVShowExtraInfo :: Number -> Http TVShowExtraInfo
-fetchTVShowExtraInfo tvshowId = (\details -> { 
+fetchTVShowExtraInfo tvshowId = (\details -> {
         tvshowId : details.id,
         actors: joinWith ", " (Array.take 5 ((\x -> x.name) <$> details.credits.cast)),
         runtime: head details.episode_run_time,
@@ -136,7 +144,7 @@ fetchTVShowExtraInfo tvshowId = (\details -> {
         response = (fetch url) :: Http TMDBTVShowExtraInfo
 
 fetchTVShowEpisode :: TVShowEpisodeSpec -> Http TVShowEpisodeDetails
-fetchTVShowEpisode episode = (\details -> { 
+fetchTVShowEpisode episode = (\details -> {
         title : details.name,
         season: show details.season_number,
         episode: show details.episode_number,
@@ -147,11 +155,11 @@ fetchTVShowEpisode episode = (\details -> {
         writer: joinWith "," ((\x -> x.name) <$> (Array.filter (\x-> x.job == "Writer" || x.job == "Screenplay") details.crew)),
         actors: joinWith "," (Array.take 5 ((\x -> x.name) <$> details.guest_stars)),
         poster: "http://image.tmdb.org/t/p/w500/" ++ details.still_path }) <$> response
-  where url = "http://api.themoviedb.org/3/tv/" ++ (show episode.seriesId) ++ 
+  where url = "http://api.themoviedb.org/3/tv/" ++ (show episode.seriesId) ++
                 "/season/" ++ episode.season ++
-                "/episode/" ++ episode.episode ++ 
+                "/episode/" ++ episode.episode ++
                 "?api_key=" ++ apiKey
-        response = (fetch url) :: Http TMDBTVShowEpisodeDetails  
+        response = (fetch url) :: Http TMDBTVShowEpisodeDetails
 
 foreign import encodeURI :: String -> String
 

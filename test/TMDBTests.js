@@ -42,6 +42,30 @@ describe ('TMDB MetadataLoader tests', function(){
       }, result);
     })
 
+    it ('should fetch movie details of not available movie', function() {
+      var result = {};
+      loader.fetchMovie({ title: "I Sette Re di Roma", year: "1989", source: "http://localhost/ISetteReDiRoma.mp4"})(function (x){
+        result = x;
+      });
+      assert.deepEqual({
+        actors: "",
+        director: "",
+        genre: "",
+        genresIds: [],
+        movieId: -1,
+        plot: "",
+        popularity: "",
+        poster: "",
+        rated: "",
+        release: "",
+        runtime: 0,
+        source: "http://localhost/ISetteReDiRoma.mp4",
+        title: "I Sette Re di Roma",
+        writer: "",
+        year: "1989",
+       }, result);
+    })
+
      it ('should fetch movie crew', function() {
       var result = {};
       loader.fetchMovieExtraInfo(105)(function (x){
@@ -190,7 +214,7 @@ describe ('TMDB MetadataLoader tests', function(){
     it ('should fetch tv shows details', function(){
       var result = {};
       loader.fetchTVShowsDetails([
-        { title: "Columbo", year: "1971", 
+        { title: "Columbo", year: "1971",
         seasons: [{
           season: "Season 2",
           episodes: [{
@@ -200,7 +224,7 @@ describe ('TMDB MetadataLoader tests', function(){
               source: "http://localhost/Columbo/TheMostCrucialGame.mp4"
             }]
         }]},
-        { title: "Star Trek The Next Generation", year: "1987", 
+        { title: "Star Trek The Next Generation", year: "1987",
           seasons: [{
             season: "Season 7",
             episodes: [{
@@ -242,7 +266,7 @@ describe ('TMDB MetadataLoader tests', function(){
             }
           ]
         },
-        { 
+        {
           seriesId: 234,
           title:"Star Trek The Next Generation (ST:TNG)",
           poster: "http://image.tmdb.org/t/p/w500//1tUvH4fn8ZDXUHGgYlgxCueOCXi.jpg",
@@ -308,7 +332,24 @@ describe ('TMDB MetadataLoader tests', function(){
 
       assert.deepEqual({
         movies: [
-          { movieId:105, 
+          {
+            actors: "",
+            director: "",
+            genre: "",
+            genresIds: [],
+            movieId: -1,
+            plot: "",
+            popularity: "",
+            poster: "",
+            rated: "",
+            release: "",
+            runtime: 0,
+            source: "http://localhost/ISetteReDiRoma.mp4",
+            title: "I Sette Re di Roma",
+            writer: "",
+            year: "1989"
+          },
+          { movieId:105,
             title:"Back to the future (The Movie)",
             year:"1985",
             genre: "Adventure, Comedy",
@@ -324,7 +365,7 @@ describe ('TMDB MetadataLoader tests', function(){
             poster: "http://image.tmdb.org/t/p/w500//pTpxQB1N0waaSc3OSn0e9oc8kx9.jpg",
             plot: "Eighties teenager Marty McFly is accidentally sent back in time to 1955, inadvertently disrupting his parents' first meeting and attracting his mother's romantic interest. Marty must repair the damage to history by rekindling his parents' romance and - with the help of his eccentric inventor friend Doc Brown - return to 1985."
           },
-          { movieId:653, 
+          { movieId:653,
             title:"The Bourne Supremacy (The Movie)",
             year:"2004",
             genre: "Adventure, Comedy",
